@@ -1,6 +1,7 @@
 ﻿#pragma once
 #ifndef ENGL09_H 
 #define ENGL09_H
+#define TEXTIN "text00.txt"
 #define EN 32 //размер англ текста (одного слова) в структ word
 #define EN1 256 //размер имени файла уже созданного с структурами word 
 #define RU 32 //размер рус текста в структ word
