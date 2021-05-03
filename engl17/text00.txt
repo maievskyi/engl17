@@ -1,0 +1,61 @@
+Refer to the Microsoft Developer Library Archive CD for MASM 6.11 documentation, including the MASM Programmer's Guide and the MASM Reference.
+Users will receive an error when attempting to launch the Library Archive CD on 16-bit platforms.
+The problem is that 16-bit setup is writing incorrect information in the infoview.ini file. In addition, two help files are not getting copied to the local drive resulting in an error when trying to view from InfoViewer's Help menu or from the Program Manager icons.
+Workaround:
+1. Run the Archive CD's setup. If you intend to use both the January 97 Library CD and the Archive CD, install them both before continuing.
+2. In the Windows directory, open infoview.ini and make the following edits:
+a. COPY and PASTE this section of your infoview.ini file to the end of the file:
+ 
+[MSDN.Settings]
+licensed.name=Your Name
+licensed.organization=Your organization
+license_version=01/28/97
+license_last_read=11/09/95     
+b. CHANGE (edit) the section just copied from: [MSDN.Settings] to read [MSDNarc.Settings]
+ 
+3. Under the [series] section, ensure you have the following entries:
+[series]
+MSDNcdc=MSDNcdc.MVB     
+If your [series] section does not have these entries, add or change the information under the [series] section to match the above.
+ 
+4. Copy the relnotes.hlp and license.hlp from the CD to local install directory (c:\msdn\archive is the default)
+--------------------------------------------------------------------------------
+If you installed both the Library Archive CD and the January 1997 Library CD, your updated infoview.ini file should look like this.
+Note: there may be additional entries in your invoview.ini file from other Infoviewer title installations (i.e., TechNet), which should be kept intact as well.
+This assumes D: is mapped to your CDROM drive.
+INFOVIEW.INI file:
+[MSDNcdc.MVB]
+installtype=Complete
+title=MSDN Archive Edition
+Path=D:\
+LocalDir=C:\MSDN\ARCHIVE\
+Exe=C:\MSDN\ARCHIVE\INFOVIEW
+Location=C:\MSDN\ARCHIVE\MSDNcdc.AUX
+ 
+[series]
+MSDN=msdncd18.MVB
+MSDNcdc=MSDNcdc.MVB
+ 
+[MSDN.Settings]
+licensed.name=Your Name
+licensed.organization=Your organization
+license_version=01/28/97
+license_last_read=11/09/95
+ 
+[all titles]
+MSDNcdc.MVB=MSDNcdc.MVB
+msdncd18.MVB=msdncd18.MVB
+ 
+[msdncd18.MVB]
+installtype=Complete
+title=Microsoft Developer Network Library - January 1997
+Path=D:\
+LocalDir=C:\MSDN\
+Exe=C:\MSDN\INFOVIEW
+Location=C:\MSDN\msdncd18.AUX
+ 
+[MSDNarc.Settings]
+licensed.name=Your Name
+licensed.organization=Your Organization
+license_version=01/28/"97"
+license_last_read=11/09/95 'MYEND'
