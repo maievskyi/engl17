@@ -100,6 +100,18 @@ if ('y' == getch(stdin))//  ==================================================
 
 // перенос ф-ла текста в оперативную динам память, для цього ---> ================
 
+		// созд-ся д пам pmemini, счит из ф поток и дополняем настр к умолч-ю потом записываем в ф поток 
+		pmemini = (struct inidat*)malloc(sizeof(struct inidat)); //созд д пам
+		if (pmemini == NULL)printf("Не выделена память ini настройки программы \n");
+		else
+		{
+			size_t result = fread(pmemini, sizeof(char), sizeof(struct inidat), pFini);  
+			// СЧИТЫВАЕМ INI файл в д пам pmemini!!!
+			fclose(pFini);  // cчитал и закрыл ))
+			printf("  Выделена дин пам din1name = %d Bytes \n\
+ под ini структуру-настройки программы и заполнена настр из ini файла\n",
+				sizeof(struct inidat));			// debug
+		}
 		//~~~~~~~  определяем РАЗМЕР входн ***.txt файла в байтах  ---------------
 		long txtSize = 0;	//--- размер в байтах файла котор будет считан в дин память
 							// устанавливаем текущ позицию в конец файла, т е (смещ на 0 относ конца ф-ла)	 
@@ -143,8 +155,64 @@ if ('y' == getch(stdin))//  ==================================================
 		}
 #endif//~~~~~~~~~~~~~~~~~~~~~ после отл можнои убрать  ~~~~~~~~~~~~~~~
 
+		//~~~~~  самое первое выдел пам *pmemword под сеп и поехали! прост блок =======================
+		{
+			printf("  Размер памяти под одну структуру %d байт\n", sizeof(struct word));
+			amountmem = MAX_WORD * sizeof(struct word);  //размер (байт) начально выд-мой памяти 
+			pmemword = (struct word *) malloc(amountmem);   //самое первое выделение памяти 
+															//  под сепарацию и занесения строк в структуры 
+															//временно - начальное количество MAX_WORD 
+			if (pmemword == NULL)printf("Не выделенна память под punsort \n");
+			else printf("  Выделенна память punsort = %d Bytes \n  под %d неотсортированных структур \
+  и ПОЕХАЛИ! сепарировать\n",
+				MAX_WORD * sizeof(struct word), MAX_WORD);				//    отладка
+		}
 
+		//~~~~~~~~~    далее (подготовка аргументов?) вызов ф-ции сепаррования - sepmini() ------   
+		pamountmem = &amountmem;  // указ на РАЗМ дин пам БАЙТ для сепарир стр-р(пока= 8 стр)
+		pcountnumword = &countnumword; //указ на счётч инкр-та СЛОВ = СТРУКТ при сепар-и 
+									   // pmemword - указ на МАССИВ СТРУКТУР (word) для отсепарирования token()
+									   //pmemtxtbuf - указ на дин массив неразбитого текста - копии входн файла
+									   //argv[1] - из ком строки имя для отладки printf
 
+									   // ВЫЗОВ СЕПАРИРОВАНИЯ  long amountword = *pcountnumword / sizeof(struct word); 
+		pmemword = sepmini(pmemword, pamountmem, pmemtxtbuf, pcountnumword, TEXTIN);
+
+		//===~~~~~~~~  далее запись в файл базу WORD_nosort сепарированных но несортированных структур ===========				
+
+		//---~~~~~~ для несортировнного массива преобразов имени XXX_nosort.dat вызовом ф-и rename2()
+		char *pnamewordnosort;  //указ д строки для преобраз.rename имя ф "argv[1]_nosort.dat"
+		{	pnamewordnosort = rename2(TEXTIN, "_nosort.dat", 4);
+		}
+		//~~~~~~~~~~~~ запись в WORD hdd файл(заранее переим) базу несортир структур ---///////////////  
+		writebase2(pFnosort, pnamewordnosort, pmemword, countnumword);//
+								//pnosortFile - указ на откр внутр ф-ции hdd файл в котором сохранять базу слов 
+								//pnamewordnosort - уже сформированное ранее имя ф-ла для hdd ("argv[1]_nosort.dat")
+								// pmemword - указ на дин массив НЕСОРТ структур, 
+								// countnumword - число несорт структур
+								//,?? возврат указ имя файла с  структурами ( ----- )???? 
+		puts(pnamewordnosort);		//debug вывод имени .hdd несортированных слов
+
+									//~~~~~~~~~~  занесение в ф ini "fini.dat" <- ИМЕНИ XXX_nosort.dat из дин памяти  ~~~~~~~~   	
+
+	//~~~~~~~  сначала изменение в дин пам pFini <- ИМЕНИ  XXX_nosort.dat ~~~~~~~~~
+		{pmemini->idname = 0;
+		strncpy(pmemini->ininamenosortf, pnamewordnosort, EN1);
+		}
+
+		//~~~~~~~~~~  запись в ф ini "fini.dat" <- ИМЕНИ XXX_nosort.dat из дин памяти  ~~~~~~~~   	
+		err = fopen_s(&pFini, "fini.dat", "r+b");//XXX_nosrt.dat сохр в ф-л "fini.dat"
+		if (err)
+		{
+			puts("\n Ошибка! \n Неудача отытия ранее созданного ф-ла имён пользователя \n");
+			system("pause");
+			exit(1);
+		}
+		fwrite(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);//fini.dat
+		fclose(pFini);	//поработал и закрыл )) 
+
+//=========================================================================================================
+//=========================================================================================================
 	};  // end открытие входного text00.txt файла ................................
 
 
