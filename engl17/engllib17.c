@@ -137,9 +137,10 @@ struct word *extensmem(struct word *pmemword, long *pamountmem, long newamountwo
 	// старой памяти struct word *pmemword и возвр ?????????????????????? указатель на нов память
 {
 	printf("~~   Начинает работать ф-ция extensmem()  ~~\n");
-	printf("Аргументы *pamountmem-%d;  newamountword - { %d }; *pcountnumword - [ %d ]\n", *pamountmem, newamountword, *pcountnumword);   // отладочная
+	printf("Аргументы *pamountmem-%d;  newamountword - { %d };sizeof(struct word)-{ %d }, *pcountnumword - [ %d ]\n",\
+		*pamountmem, newamountword, sizeof(struct word), *pcountnumword);   // отладочная
 																																		  // ~~~~~~~~~~~~~~~~~~~~~~~  выделение нов увел дин памяти   ~~~~~~~~~~~~~~~~~~~~~~~~~
-	struct word *ptempstrmemword = (struct word *) malloc((newamountword) * sizeof(struct word));
+ 	struct word *ptempstrmemword = (struct word *) malloc((newamountword) * sizeof(struct word));
 	//ptempstrmemword - временный указат на выделение другого размера памяти под структуры 
 	if (ptempstrmemword == NULL)printf("Не выделенна память под расширение struct word[] \n");
 	else printf("Выделенна увеличенн память = %d Bytes под  %d \

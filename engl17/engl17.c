@@ -88,7 +88,7 @@ int main(int argc, const char ** argv, const char** env)
 	puts("\n если хотите изменить настройки урока ?  - тогда нажмите 'y'  \n");
 	if ('y' == getch(stdin))//  ==================================================
 	{
-		puts("\n пробуем открыть text00.txt и создаём другой fini.dat_____ \n");
+		puts("\n создаём другой fini.dat и  пробуем открыть text00.txt _____ \n");
 		// открытие входного text00.txt файла =======================================
 		err = fopen_s(&pFtxt, TEXTIN, "rb");// инициал-тся указ=ль FILE *pFtxt 
 											//T  и открывается в режиме (rb)-  "txt2.txt" 
@@ -98,6 +98,16 @@ int main(int argc, const char ** argv, const char** env)
 		}
 		else {
 			puts("открывается указ-ль FILE *pFtxt ф потока на text00.txt \n");
+
+			//~~~~~~~  определяем РАЗМЕР входн ***.txt файла в байтах  ---------------
+			long txtSize = 0;	//--- размер в байтах файла котор будет считан в дин память
+								// устанавливаем текущ позицию в конец файла, т е (смещ на 0 относ конца ф-ла)	 
+			fseek(pFtxt, 0, SEEK_END);
+			txtSize = ftell(pFtxt); //в txtSize = ПОЛУЧАЕМ РАЗМЕР В БАЙТАХ
+
+			fseek(pFtxt, 0, SEEK_SET);	// перевести текущую поз на начало файла
+
+			printf("Размер памяти входного текста из ф-ла .txt = %d Bytes \n", txtSize);
 
 			//// перенос ф-ла текста в оперативную динам память, для цього ---> ======================
 			// созд-ся д пам pmemini, счит из ф поток и дополняем настр к умолч-ю 
@@ -117,15 +127,7 @@ int main(int argc, const char ** argv, const char** env)
  под ini структуру-настройки программы и заполнена настр из ini файла\n",
 					sizeof(struct inidat));			// debug sizeof(struct inidat));
 			}
-			//~~~~~~~  определяем РАЗМЕР входн ***.txt файла в байтах  ---------------
-			long txtSize = 0;	//--- размер в байтах файла котор будет считан в дин память
-								// устанавливаем текущ позицию в конец файла, т е (смещ на 0 относ конца ф-ла)	 
-			fseek(pFtxt, 0, SEEK_END);
-			txtSize = ftell(pFtxt); //в txtSize = ПОЛУЧАЕМ РАЗМЕР В БАЙТАХ
-
-			fseek(pFtxt, 0, SEEK_SET);	// перевести текущую поз на начало файла
-
-			printf("Размер памяти входного текста из ф-ла .txt = %d Bytes \n", txtSize);
+			
 
 			//~~~~~~  выделение дин памяти буфеp *pmemtxtbuf---------------------------------
 			char * pmemtxtbuf;			//--->  локальн указатель на дин пам. pmemtxtbuf 
@@ -144,6 +146,7 @@ int main(int argc, const char ** argv, const char** env)
 			{
 				if (feof(pFtxt)) printf("Преждевременное достижение конца файла.\n");
 				else printf("Ошибка при чтении файла.\n");
+				system("pause");
 				exit(3);
 			}
 			fclose(pFtxt);	//поработал и закрыл )) файловый ввод из которого читается входной текст
@@ -181,6 +184,8 @@ int main(int argc, const char ** argv, const char** env)
 
 										   // ВЫЗОВ СЕПАРИРОВАНИЯ  long amountword = *pcountnumword / sizeof(struct word); 
 			pmemword = sepmini(pmemword, pamountmem, pmemtxtbuf, pcountnumword, TEXTIN);
+
+			free(pmemtxtbuf);
 
 			//===~~~~~~~~  далее запись в файл базу WORD_nosort сепарированных но несортированных структур ===========				
 
@@ -230,7 +235,8 @@ int main(int argc, const char ** argv, const char** env)
 
 	} //end "хотите ли создать другой fini.dat"
 
-
+	free(pmemini);
+	
 	printf("\n\n             The END!   -     конец урока! \n\n\n");
 	system("pause");
 }  //end main
