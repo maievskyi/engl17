@@ -42,41 +42,42 @@ errno_t err;			//  переменная (int?) для вывода ошибок 
 						
 // есть ли fini.dat  ==============================================================
 // открытие=проверка сущ-вания ini файла пользов настр "fini.dat"__________________		
-err = fopen_s(&pFini, "fini.dat", "r+b");// открывается на чтение с дозаписью
-if (err)	// значит нет fini.dat								
+err = fopen_s(&pFini, "fini.dat", "r+b");// открывается ли на чтение с дозаписью
+if (err)	// значит не открылся fini.dat								
 {
 	perror("fini.dat");
-	puts("\n !!! ранее не существовал ini файл пользователя \
-\n далее поверяем есть ли text00.txt \n");
+	puts("\n !!! ранее НЕ существовал ini файл пользователя  \n");
 	system("pause");
 
-	// далее откр pFini, созд-ся д пам pmemini, заполн по умолч-ю и зап в ф поток 
+//// далее созд-ся д пам pmemini, заполн по ум-нию, откр pFini и зап д пам в ф поток
+
 	pmemini = (struct inidat*)malloc( sizeof(struct inidat)); //созд д пам
 	if (pmemini == NULL)printf("Не выделена память ini настройки программы \n");
 	else printf("  Выделена дин пам din1name = %d Bytes \n\
  под ini структуру-настройки программы \n",
 		sizeof(struct inidat));			// debug
 
-	//и !!!! дальнейшая инициализация настроек по умолчани
+//и !!!! дальнейшие настроек дополнительно к настр по умолчани
 	memset(pmemini, NULL, sizeof(struct inidat)); //    заполн. нулями
 	
-
-	err = fopen_s(&pFini, "fini.dat", "w+b");// открывается на чтение с дозаписью
+// открывается нов fini.dat на запись-чтение
+	err = fopen_s(&pFini, "fini.dat", "w+b");
 	if (err)	// значит нет fini.dat								
 	{
-		perror("fini.dat");
 		puts("\n !!! не создался ini файл пользователя \n");
+		perror("fini.dat");
 		system("pause");
 	}
 	else
 	{
-		puts("\n +++  создался новый ini файл пользователя \n");	//debug
+		puts("\n +++  создался НОВЫЙ ini файл пользователя \n");	//debug
 	}
-	//запись  содержимого дин память pmeminidat в ф fini.dat (?надоли обн  = 0) ============
+//запись  содержимого дин память pmeminidat в ф fini.dat (?надоли обн  = 0) ============
 	size_t result = fwrite(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);
 	puts("\n Записан на HDD Новый файл пользователя \"fini.dat\" \n");
 
 	fclose(pFini);	// закрыть файловый поток из которого читаются имена файлов
+	free(pmemini);	// освободить память pmemini
 	system("pause");
 } // end if "есть ли fini.dat" ...................................................
 /*else   // значит есть fini.dat  ____________________________________________
@@ -98,29 +99,32 @@ if ('y' == getch(stdin))//  ==================================================
 	else {
 		puts("открывается указ-ль FILE *pFtxt ф потока на text00.txt \n");
 
-// перенос ф-ла текста в оперативную динам память, для цього ---> ================
+//// перенос ф-ла текста в оперативную динам память, для цього ---> ======================
+// созд-ся д пам pmemini, счит из ф поток и дополняем настр к умолч-ю 
+//потом записываем в ф поток 
 
-		// созд-ся д пам pmemini, счит из ф поток и дополняем настр к умолч-ю потом записываем в ф поток 
 		pmemini = (struct inidat*)malloc(sizeof(struct inidat)); //созд д пам
 		if (pmemini == NULL)printf("Не выделена память ini настройки программы \n");
 		else
 		{
-			size_t result = fread(pmemini, sizeof(char), sizeof(struct inidat), pFini);  
-			// СЧИТЫВАЕМ INI файл в д пам pmemini!!!
-			fclose(pFini);  // cчитал и закрыл ))
+// СЧИТЫВАЕМ INI файл в д пам pmemini!!!
+			size_t result = fread(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);
+			fclose(pFini);  // cчитал и закрыл ф-л ))
 			printf("  Выделена дин пам din1name = %d Bytes \n\
  под ini структуру-настройки программы и заполнена настр из ini файла\n",
-				sizeof(struct inidat));			// debug
+				result);			// debug sizeof(struct inidat));
+			printf("  Выделена дин пам din1name = %d Bytes \n\
+ под ini структуру-настройки программы и заполнена настр из ini файла\n",
+				sizeof(struct inidat));			// debug sizeof(struct inidat));
 		}
 		//~~~~~~~  определяем РАЗМЕР входн ***.txt файла в байтах  ---------------
 		long txtSize = 0;	//--- размер в байтах файла котор будет считан в дин память
 							// устанавливаем текущ позицию в конец файла, т е (смещ на 0 относ конца ф-ла)	 
 		fseek(pFtxt, 0, SEEK_END);
 		txtSize = ftell(pFtxt); //в txtSize = ПОЛУЧАЕМ РАЗМЕР В БАЙТАХ
-
-								   //rewind(pFtxt);  //+ очистка буфера      														
+    														
 		fseek(pFtxt, 0, SEEK_SET);	// перевести текущую поз на начало файла
-										//
+		 
 		printf("Размер памяти входного текста из ф-ла .txt = %d Bytes \n", txtSize);
 
 		//~~~~~~  выделение дин памяти буфеp *pmemtxtbuf---------------------------------
@@ -133,7 +137,7 @@ if ('y' == getch(stdin))//  ==================================================
 			fputs("Ошибка памяти", stderr);
 			exit(2);
 		}
-		printf("~~ выделена дин пам. pmemtxtbuf для хранения текста из файла ~~\n");
+		printf("~~ выделена дин пам. pmemtxtbuf для хранения текста из файла %d ~~\n", *pmemtxtbuf);
 		// ------из pFtxt считываем файл в буфер	pmemtxtbuf!!!------------------------------------
 		size_t result = fread(pmemtxtbuf, sizeof(char), txtSize, pFtxt);  // СЧИТЫВАЕМ файл в буфер!!!
 		if (result != txtSize)  //если не совпало число считанных байт
