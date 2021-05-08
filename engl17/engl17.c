@@ -78,6 +78,18 @@ int main(int argc, const char ** argv, const char** env)
 
 		fclose(pFini);	// закрыть файловый поток из которого читаются имена файлов
 		free(pmemini);	// освободить память pmemini
+		err = fopen_s(&pFini, "fini.dat", "r+b");// открывается ли на чтение с дозаписью
+		if (err)	// значит не открылся fini.dat								
+		{
+			perror("fini.dat");
+			puts("\n !!!!! НЕ переоткрылся на чт с дозап ini файл пользователя   \n");
+			system("pause");
+		}
+		else
+		{
+			puts("\n Переоткрылся на чт с дозап ini файл пользователя с стандартн настр  \n");
+		}
+
 		system("pause");
 	} // end if "есть ли fini.dat" ...................................................
 	  /*else   // значит есть fini.dat  ____________________________________________
@@ -130,7 +142,7 @@ int main(int argc, const char ** argv, const char** env)
 			
 
 			//~~~~~~  выделение дин памяти буфеp *pmemtxtbuf---------------------------------
-			char * pmemtxtbuf;			//--->  локальн указатель на дин пам. pmemtxtbuf 
+			char *pmemtxtbuf;			//--->  локальн указатель на дин пам. pmemtxtbuf 
 										//		для хранения содерж-го из вх-го файла...........
 			pmemtxtbuf = (char*)malloc(sizeof(char) * txtSize); // выделить дин память pmemtxtbuf для хран-я содерж-го из ф-л а
 																// далее подлежащего разбиению токенами
@@ -145,7 +157,7 @@ int main(int argc, const char ** argv, const char** env)
 			if (result != txtSize)  //если не совпало число считанных байт
 			{
 				if (feof(pFtxt)) printf("Преждевременное достижение конца файла.\n");
-				else printf("Ошибка при чтении файла.\n");
+				else printf("Ошибка при чтении файла.\n  result=%d\t txtSize=%d\n", result, txtSize);
 				system("pause");
 				exit(3);
 			}
