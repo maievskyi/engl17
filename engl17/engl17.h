@@ -13,7 +13,7 @@
 #define QUANTITYCHARNAME 256 //?? кол-во байт в одной записи в масс имён ф-в прогр ??
 #define QUANTITYNAME 1 // кол-во записей элементов стр-тур в массиве имён ф-в программы
 // #define d ((&struct word a.c)-(&struct word a)) 
-#define TEXT //вывод считанн текста до сепарац 
+#define TEXTD //вывод считанн текста до сепарац  debug
 //#define SEPARATED  // sepmini()
 //#define M_SORT		// main()
 #define SORT

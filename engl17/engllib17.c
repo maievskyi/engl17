@@ -17,7 +17,7 @@ extern flagtext;
 // при работе с (большим текстом) из себя выз ф-ю extensmem()
 struct word * sepmini(struct word *pmemword, long *pamountmem, char * pmemtxtbuf, int * pcountnumword, char const * argv)
 	//возвр указатель на д память с отсепар словами - str word *pmemword
-	// заранее созданный и переданный в ф-ю,
+	// заранее созданный (мал размера) и переданный в ф-ю,
 	// pamountmem указ на РАЗМЕР д пам str word в б-тах
 	//multipl коэфф умнож при нехват дин памяти при token() 
 	//pmemtxtbuf указ. на дин массив неразбитого текста - копии входн файла
@@ -25,10 +25,11 @@ struct word * sepmini(struct word *pmemword, long *pamountmem, char * pmemtxtbuf
 	// нужен для точного размера массива (несортированного) структур с англ словами
 	// arv1 имя передаваемого через ком строку входного файла - нужен только для fprint()????
 {
-	printf("~~   Начинает работать ф-ция sepmini()  ~~\n");
+	printf("~~   Начинает работать ф-ция sepmini()  ~~~\n \
+	~~ Разбиение массива символов из ф-ла - ( %s ): ~~\
+	~~  приведение к нижнему регистру и вывод в монитор  ~~\n", argv);
 	printf("Tokens - называется опознавательный знак\n\n");
-	printf(" ~~ Разбиение массива символов из ф-ла - аргумента ком строки ( %s ): ~~\
-		 ~~ и приведение к нижнему регистру и вывод в монитор  ~~~\n", argv);
+
 	//int count = 0;  // КОЛ НЕОТСОРТ СТРУКТУР ????
 	//printf("Tokens:\n");
 
@@ -136,14 +137,15 @@ struct word *extensmem(struct word *pmemword, long *pamountmem, long newamountwo
 	// котори увелич размер *pamountmem дин памяти struct word * до размера *pnewsize  и передёт в него содерж 
 	// старой памяти struct word *pmemword и возвр ?????????????????????? указатель на нов память
 {
-	printf("~~   Начинает работать ф-ция extensmem()  ~~\n");
-	printf("Аргументы *pamountmem-%d;  newamountword - { %d }; *pcountnumword - [ %d ]\n", *pamountmem, newamountword, *pcountnumword);   // отладочная
+	printf("\n~~   Начинает работать ф-ция extensmem()  ~~\n");
+	printf("Аргументы *pamountmem-%d;  newamountword - { %d };sizeof(struct word)-{ %d }, *pcountnumword - [ %d ]\n",\
+		*pamountmem, newamountword, sizeof(struct word), *pcountnumword);   // отладочная
 																																		  // ~~~~~~~~~~~~~~~~~~~~~~~  выделение нов увел дин памяти   ~~~~~~~~~~~~~~~~~~~~~~~~~
-	struct word *ptempstrmemword = (struct word *) malloc((newamountword) * sizeof(struct word));
+   	struct word *ptempstrmemword = (struct word *) malloc((newamountword) * sizeof(struct word));
 	//ptempstrmemword - временный указат на выделение другого размера памяти под структуры 
 	if (ptempstrmemword == NULL)printf("Не выделенна память под расширение struct word[] \n");
 	else printf("Выделенна увеличенн память = %d Bytes под  %d \
-отсепарированных струтур word \n",
+отсепарированных струтур word\n\n",
 (newamountword) * sizeof(struct word), (newamountword));			//
 	*pamountmem = newamountword * sizeof(struct word);       //для будущего использ в др ф-циях
 	if (newamountword < *pcountnumword)
