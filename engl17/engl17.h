@@ -36,6 +36,7 @@ struct word * sepmini(struct word *pmemword, long *pamountmem, char *pmemtxtbuf,
 	//ф-я увелич размер int size дин памяти struct word *mem до размера *pnewsize до 
 	//размера *pnewsize  и передающая в него содерж старой памяти struct word *pmemword 
 	// и возвр ????????????????? указ на нов память
+struct word * sepmini2(struct word *pmemword, long *pamountmem, char *pmemtxtbuf, int *pcount, char *nametext);  //ф-я новая
 struct word *extensmem(struct word *pmemword, long *pamountmem, long newamountword, int *pcountnumword);
 
 char* writebase2(FILE *phddfile, char * namefilehdd, struct word *pmemword, int countnumword);	// 

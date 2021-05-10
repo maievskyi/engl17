@@ -15,7 +15,7 @@ extern flagtext;
 //////////-------  новая ф-ция  ------///////////////////////////////////////////////////////////////
 // сепарирует строчный дин массив pmemtxtbuf[] (уже скопированный из ф-ла) в  массив структур word
 // при работе с (большим текстом) из себя выз ф-ю extensmem()
-struct word * sepmini(struct word *pmemword, long *pamountmem, char * pmemtxtbuf, int * pcountnumword, char const * argv)
+struct word * sepmini(struct word *pmemword, long *pamountmem, char * pmemtxtbuf, int * pcountnumword, char const * name)
 	//возвр указатель на д память с отсепар словами - str word *pmemword
 	// заранее созданный (мал размера) и переданный в ф-ю,
 	// pamountmem указ на РАЗМЕР д пам str word в б-тах
@@ -27,7 +27,7 @@ struct word * sepmini(struct word *pmemword, long *pamountmem, char * pmemtxtbuf
 {
 	printf("~~   Начинает работать ф-ция sepmini()  ~~~\n \
 	~~ Разбиение массива символов из ф-ла - ( %s ): ~~\
-	~~  приведение к нижнему регистру и вывод в монитор  ~~\n", argv);
+	~~  приведение к нижнему регистру и вывод в монитор  ~~\n", name);
 	printf("Tokens - называется опознавательный знак\n\n");
 
 	//int count = 0;  // КОЛ НЕОТСОРТ СТРУКТУР ????
@@ -110,8 +110,6 @@ struct word * sepmini(struct word *pmemword, long *pamountmem, char * pmemtxtbuf
 		// вывод НЕРАЗДЕЛЁННОГО ТЕКСТА
 		printf("next_token1======%s \n\n", next_token1);//temp для пояснения работы strtok_s(string1, seps, &next_token1)
 #endif
-
-
 														//66								// тут  цикл вызова token  ??????????????? 
 		token1 = strtok_s(NULL, seps, &next_token1);
 		//цикл-ий  вызов фц strtok дальнейшег пословного сепар-я
@@ -131,7 +129,32 @@ struct word * sepmini(struct word *pmemword, long *pamountmem, char * pmemtxtbuf
 	return pmemword;
 }//    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   END sepmini()   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
- //////////////==== увелич размер дин памяти и перенос в содерж старой пам  ======/////////////////////
+ //////////-------  новая ф-ция  ------///////////////////////////////////////////////////////////////
+ // сепарирует строчный дин массив pmemtxtbuf[] (уже скопированный из ф-ла) в заранее созданный 
+ // (мал размера) массив структур pmemword,  при работе с (большим текстом)
+ //  из себя вызывает ф-ю extensmem()
+ //возвр указатель на д память с отсепар словами - str word *pmemword
+ //	также переводит все символы в строчные   ____________________________________________
+ // pamountmem указ на РАЗМЕР д пам str word в б-тах
+ //MULT_DIN_MEMl коэфф умнож при нехват дин памяти при token() 
+ //pmemtxtbuf указ. на дин массив неразбитого текста - копии входн файла
+ //pcount - указатель числа подсчитанных слов при сепарир
+ // нужен для точного размера массива (несортированного) структур с англ словами
+ // nametext имя передаваемого входного файла - нужен только для fprint()????
+struct word * sepmini2(struct word * pmemword, long * pamountmem, char * pmemtxtbuf, int * pcount, char * nametext)
+{
+	char seps[] = " ,\t\n";
+	char *token1 = NULL;
+	
+	char *next_token1 = NULL;
+
+
+	return NULL;
+}
+//  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  END sepmini2()   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+//////////////==== увелич размер дин памяти и перенос в содерж старой пам  ======/////////////////////
 struct word *extensmem(struct word *pmemword, long *pamountmem, long newamountword, int *pcountnumword)
 	//при достижении счётчика заполнения struct word значения выделенного разм памяти size вызывается ф-я
 	// котори увелич размер *pamountmem дин памяти struct word * до размера *pnewsize  и передёт в него содерж 
