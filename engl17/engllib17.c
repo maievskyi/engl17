@@ -15,10 +15,10 @@ extern flagtext;
 //////////-------  новая ф-ция  ------///////////////////////////////////////////////////////////////
 // сепарирует строчный дин массив pmemtxtbuf[] (уже скопированный из ф-ла) в  массив структур word
 // при работе с (большим текстом) из себя выз ф-ю extensmem()
-struct word * sepmini(struct word *pmemword, long *pamountmem, char * pmemtxtbuf, int * pcountnumword, char const * name)
+struct word * sepmini(struct word *pmemword, long *pamountword, char * pmemtxtbuf, int * pcountnumword, char const * name)
 	//возвр указатель на д память с отсепар словами - str word *pmemword
 	// заранее созданный (мал размера) и переданный в ф-ю,
-	// pamountmem указ на РАЗМЕР д пам str word в б-тах
+	// pamountword указ на РАЗМЕР д пам str word в б-тах
 	//multipl коэфф умнож при нехват дин памяти при token() 
 	//pmemtxtbuf указ. на дин массив неразбитого текста - копии входн файла
 	//pcount - указатель числа подсчитанных слов при сепарир
@@ -40,7 +40,7 @@ struct word * sepmini(struct word *pmemword, long *pamountmem, char * pmemtxtbuf
 	struct word *plocseptempstr2 = NULL;		//--> врем указ на увеличенную дин память
 
 	printf("Выделенна начальная память = %d Bytes под  %d \
-отсепарированных струтур \n", (*pamountmem), (*pamountmem) / sizeof(struct word));	// 
+отсепарированных струтур \n", (*pamountword), (*pamountword) / sizeof(struct word));	// 
 
 																					//11
 	char seps[] = " ][()/,.\t\n\r\v\xA0\"\'\\?!-+*/<>=_:;0123456789#$%^&";	// строка символов - сепараторов
@@ -84,7 +84,7 @@ struct word * sepmini(struct word *pmemword, long *pamountmem, char * pmemtxtbuf
 			maxmemstr = newamountword; //?? может лишнее дублирование верней границы струтур
 									   // вызов ф-ии ???? и т д
 			printf("~~   Вызов ф-ции extensmem()  ~~\n");
-			pmemword = extensmem(pmemword, pamountmem, newamountword, pcountnumword);
+			pmemword = extensmem(pmemword, pamountword, newamountword, pcountnumword);
 
 		} // end if	4 .............................................................
 		if (ix > 1)
@@ -98,7 +98,7 @@ struct word * sepmini(struct word *pmemword, long *pamountmem, char * pmemtxtbuf
 			printf("%4d. r=%d  id= %4d. - { %s }  ->  [ %s ]\n", *pcountnumword, \
 				pmemword[(*pcountnumword)].repeat, *pcountnumword + 1, token1, tokenbuf);// отладочная строка 
 																						 //- вывод уже ОТДЕЛЁННОГО СЛОВА -temp-  pmemword[(*pcountnumword)].repeat,
-																						 //*(plocsep + *pcount)->en = "NULL"; // заполнение поля структуры
+						 																 //*(plocsep + *pcount)->en = "NULL"; // заполнение поля структуры
 #endif			 //55
 			*pcountnumword += 1;     // ???????????????????????????????????????
 
@@ -117,7 +117,7 @@ struct word * sepmini(struct word *pmemword, long *pamountmem, char * pmemtxtbuf
 
 		// "обрезание" лишней памяти в массиве струтур
 	long realamountword = *pcountnumword;
-	pmemword = extensmem(pmemword, pamountmem, realamountword, pcountnumword);
+	pmemword = extensmem(pmemword, pamountword, realamountword, pcountnumword);
 	printf("Выделенна память = %d Bytes под  %d \
 реальное число отсепарированных струтур word \n",
 (realamountword) * sizeof(struct word), (realamountword));			//   
@@ -129,40 +129,85 @@ struct word * sepmini(struct word *pmemword, long *pamountmem, char * pmemtxtbuf
 	return pmemword;
 }//    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   END sepmini()   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
- //////////-------  новая ф-ция  ------///////////////////////////////////////////////////////////////
- // сепарирует строчный дин массив pmemtxtbuf[] (уже скопированный из ф-ла) в заранее созданный 
- // (мал размера) массив структур pmemword,  при работе с (большим текстом)
- //  из себя вызывает ф-ю extensmem()
- //возвр указатель на д память с отсепар словами - str word *pmemword
- //	также переводит все символы в строчные   ____________________________________________
- // pamountmem указ на РАЗМЕР д пам str word в б-тах
- //MULT_DIN_MEMl коэфф умнож при нехват дин памяти при token() 
- //pmemtxtbuf указ. на дин массив неразбитого текста - копии входн файла
- //pcount - указатель числа подсчитанных слов при сепарир
- // нужен для точного размера массива (несортированного) структур с англ словами
- // nametext имя передаваемого входного файла - нужен только для fprint()????
-struct word * sepmini2(struct word * pmemword, long * pamountmem, char * pmemtxtbuf, int * pcount, char * nametext)
+ //////////////// -------  новая ф-ция  ------ ///////////////////////////////////////////
+struct word * sepmini2(struct word *pmemarray, int *psizearray, int *pcountwordlok, char *pmemtxtbuf)  //ф-я новая
+// pmemarray - ук на массив структур word, psizearray - указ на число структур в массиве
+// pcountwordlok - ук на счётчик слов pmemtxtbufpmemtxtbuf - ук на д память с входн текстом
 {
-	char seps[] = " ,\t\n";
+	char seps[] = " ][()/,.\t\n\r\v\xA0\"\'\\?!-+*/<>=_:;0123456789#$%^&";	// строка сепараторов
+	int max_word = MAX_WORD;
+
 	char *token1 = NULL;
-	
+
 	char *next_token1 = NULL;
+	int counttoken = 0; //локал счетчик токенов для определения разм требуем д памяти
+						// в counttoken находится число отсепар слов
+
+	token1 = strtok_s(pmemtxtbuf, seps, &next_token1);	//первый вызов ф сепарирования
+														// !каждая строка после strtok_s() будет заканчиваться \0
+	while (token1 != NULL)
+	{
+		//если счётчик слов достиг предела - увеличиваем память вызовом ф extensemem2() 
+		int mult = MULT_DIN_MEM;
+		if (*pcountwordlok == *psizearray)
+		{
+			printf("sepmini2: Адрес pmemarray = %d   ,  содержимое = %d\n", &pmemarray, pmemarray);//t
+			printf("sepmini2 перед extens: psizearray = %d   \n", *psizearray);//t
+			pmemarray = extensmem2(pmemarray, psizearray, pcountwordlok, mult);
+			printf("sepmini2 после extesmem2: Адрес pmemarray = %d   ,  содержимое = %d\n", &pmemarray, pmemarray);//t
+			printf("sepmini2 после extens: *psizearray = %d   \n", *psizearray);//t
+		}
+		//  ПРИВОДИМ СИМВОЛЫ К НИЖН РЕГИСТРУ ==================================
+		int ix = 0;				// СЧЕТЧИК в 0 , для перебора СИМВОЛОВ  (а если > 32 ???)
+								// который в каждом новом слове сбрасывается в 0
+		while (token1[ix])					// начиная с первого символа из токена (char-строки) 
+											//  пока в  token1[ix] не встретится \0
+		{									//  ПРИВОДИМ СИМВОЛЫ К НИЖН РЕГИСТРУ 
+			token1[ix] = (char)tolower(token1[ix]);  //посимвольно преобраз-е текущ символа ст-ки в СТРОЧНЫЙ
+			ix++;                                   // инкремент индекса символов в строке
+		}
+		token1[ix] = (char)tolower(token1[ix]);	// запмсь  последнего =/0 символа ?
+												// КОПИР АНГЛ СЛ В ПОЛЕ en[]  ============================================
+		strcpy_s((*(pmemarray + counttoken)).en, EN, token1);
+		printf(" en[%d] = %s \n", counttoken, (*(pmemarray + counttoken)).en); //t temp
+		counttoken += 1;	// ?? возможно лишнее дублирование счётчика
+		*pcountwordlok += 1;// ?? возможно лишнее дублирование счётчика	
+		token1 = strtok_s(NULL, seps, &next_token1);
 
 
-	return NULL;
-}
+		//цикл-ий  вызов фц strtok дальнейшег пословного сепар-я	 
+	}	// end while (token1 != NULL)
+
+		//printf(" Надо выделять память = %d Bytes под  %d \
+		//отсепарированных струтур \n\n", counttoken, counttoken);
+
+
+	if (pmemarray == NULL)printf("Не выделена память под struct word \n");
+
+	//for (size_t i = 0; i < 10; i++)
+	//{
+	//	puts(pmemtxtbuf);
+	//}
+
+	/*if (puts(pmemtxtbuf) == EOF) {
+		printf("\n\n Ошибка после  тоокена текстов файла \n");
+	} */ // -> -> -> 	
+
+	return pmemarray;
+
+};
 //  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  END sepmini2()   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 //////////////==== увелич размер дин памяти и перенос в содерж старой пам  ======/////////////////////
-struct word *extensmem(struct word *pmemword, long *pamountmem, long newamountword, int *pcountnumword)
+struct word *extensmem(struct word *pmemword, long *pamountword, long newamountword, int *pcountnumword)
 	//при достижении счётчика заполнения struct word значения выделенного разм памяти size вызывается ф-я
-	// котори увелич размер *pamountmem дин памяти struct word * до размера *pnewsize  и передёт в него содерж 
+	// котори увелич размер *pamountword дин памяти struct word * до размера *pnewsize  и передёт в него содерж 
 	// старой памяти struct word *pmemword и возвр ?????????????????????? указатель на нов память
 {
 	printf("\n~~   Начинает работать ф-ция extensmem()  ~~\n");
-	printf("Аргументы *pamountmem-%d;  newamountword - { %d };sizeof(struct word)-{ %d }, *pcountnumword - [ %d ]\n",\
-		*pamountmem, newamountword, sizeof(struct word), *pcountnumword);   // отладочная
+	printf("Аргументы *pamountword-%d;  newamountword - { %d };sizeof(struct word)-{ %d }, *pcountnumword - [ %d ]\n",\
+		*pamountword, newamountword, sizeof(struct word), *pcountnumword);   // отладочная
 																																		  // ~~~~~~~~~~~~~~~~~~~~~~~  выделение нов увел дин памяти   ~~~~~~~~~~~~~~~~~~~~~~~~~
    	struct word *ptempstrmemword = (struct word *) malloc((newamountword) * sizeof(struct word));
 	//ptempstrmemword - временный указат на выделение другого размера памяти под структуры 
@@ -170,7 +215,7 @@ struct word *extensmem(struct word *pmemword, long *pamountmem, long newamountwo
 	else printf("Выделенна увеличенн память = %d Bytes под  %d \
 отсепарированных струтур word\n\n",
 (newamountword) * sizeof(struct word), (newamountword));			//
-	*pamountmem = newamountword * sizeof(struct word);       //для будущего использ в др ф-циях
+	*pamountword = newamountword * sizeof(struct word);       //для будущего использ в др ф-циях
 	if (newamountword < *pcountnumword)
 	{
 		printf("Выделенная память под struct word[] меньше \n чем требует счётчик слов \n");
@@ -188,7 +233,43 @@ struct word *extensmem(struct word *pmemword, long *pamountmem, long newamountwo
 	pmemword = ptempstrmemword;			 		// присв plocsep адрес нового содержимого plocseptempstr2
 	return pmemword;
 }//    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   END extensmem()   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+////////////////////////////////// --- нов ф extensmem2() --- //////////////////////
+ //выделяет нов дин пам pnewsizemem увеличенного разм в multipl раз 
+ //копирует содержимое из старой памяти
+ //присваивает памяти указатель *pmemword
+struct word *extensmem2(struct word *pmemarray, int *psizearray, int *pcountwordlok, int multipl)
+	// pmemarray - ук на массив структур word, psizearray - указ на число структур в массиве
+	// pcountwordlok - ук на счётчик слов,  multipl - в сколько раз увелич память
+{
+	printf("extensmem2: Адрес pmemarray = %d   ,  содержимое = %d\n", &pmemarray, pmemarray);
+	struct word *ptempmem = NULL;
+	ptempmem = (struct word*)malloc(sizeof(struct word)*(*pcountwordlok) * multipl);
+	if (ptempmem == NULL)
+	{
+		fputs("Ошибка умножения памяти", stderr);   // ????????????????????
+		puts("\nОшибка умножения памяти");
+		system("pause");
+		exit(2);
+	}
+	printf("extensmem2: Адрес ptempmem = %d   ,  содержимое = %d\n", &ptempmem, ptempmem);//t
+																						  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ копирование во временн память    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	for (int z = 0; z < *pcountwordlok; z++)	// поэлементное копирование во временн память
+	{											// начиная с адреса по указателю памяти + ...
+		*(ptempmem + z) = *(pmemarray + z);	// плюс инкремент  ...
 
+	}
+	printf("Скопирован предыд масс структур в увелич память\n");//t
+	free(pmemarray);
+	pmemarray = ptempmem;
+	printf("extensmem2 после перекопир: Адрес pmemarray = %d   ,  содержимое = %d\n", &pmemarray, pmemarray);//t
+	*psizearray = (*psizearray) * multipl;
+
+	printf("extensmem2 после перекопир: *psizearray = %d   \n", *psizearray);//t
+
+	return pmemarray;
+}
+
+ //    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   END extensmem2()   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
  /////////////////// ======== запись в файл(заранее переименов) базу  структур   ==========///////////  
 char* writebase2(FILE *phddfile, char* pinidat, struct word *pmemword, int countnumword)//

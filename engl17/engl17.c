@@ -18,17 +18,17 @@ FILE *pFini;	//---> указатель на структ. файл в котор
 FILE *pFnosort;	//---> указатель на структ. ф в котор сохр несорт базу слов - argv[1]_nosort.dat"
 FILE *pFsort;	//---> указатель на структ. ф в котором сохр сорт базу слов - argv[1]_sort.dat"
 
-char *pnamenosort;		//-->указат на имя ф-ла с запис несорт масс стр 
-struct word *pmemword;		//-->глоб указат в main()на первичное выделеие ДИН памяти 
+char *pnamenosort = NULL;		//-->указат на имя ф-ла с запис несорт масс стр 
+struct word *pmemword = NULL;		//-->глоб указат в main()на первичное выделеие ДИН памяти 
 							//под МАССИВ СТРУКТУР (word) для отсепарирования token()
 							//далее память будет перерасширятся по этому указателю
-struct word *pmemsortword;  //--> указ на д пам стрктур с отсортированными словами
-struct word *pmemalphabetword;  //--> указ на д пам стр-р с отсорт-ми и сокращенными словами
-long amountmem = 0;		//---> РАЗМЕР в байтах дин пам выде-мых под структуры word
-long *pamountmem;		//--->укз РАЗМ в б-тах ДИН пам выде-мых под несорт структ word
+struct word *pmemsortword = NULL;  //--> указ на д пам стрктур с отсортированными словами
+struct word *pmemalphabetword = NULL;  //--> указ на д пам стр-р с отсорт-ми и сокращенными словами
+int amountword = 0;		//---> РАЗМ дин пам В ЗАПИСЯХ  под структуры word
+int *pamountword = NULL;		//---> указ на РАЗМ дин пам В ЗАПИСЯХ  под структуры word
 int countnumword = 0;	//---счётчик инкремента слов а значит и стр-р при сепар-и
-int *pcountnumword;		//--->указатель на счетч слов
-struct inidat *pmemini;	//--->указ на ДИН пам с стр-й базы ini имён прог-мы
+int *pcountnumword = NULL;		//--->указатель на счетч слов
+struct inidat *pmemini = NULL;	//--->указ на ДИН пам с стр-й базы ini имён прог-мы
 int flagtext = NEWTEXT;	//переменная -ФЛАГ режима работы со стар или нов текстом
 						//т е будет ли сепарироваться по новой и писаться в нофую базу слов 
 
@@ -38,7 +38,10 @@ int main(int argc, const char ** argv, const char** env)
 
 	system("chcp 1251 > nul");
 	errno_t err;			//  переменная (int?) для вывода ошибок ? внутр переменная (int?)
-
+	//pamountword = &amountword;  !!!!!!!!!!!!!!!!
+	//pcountwordlok = &countnumword;
+	pamountword = &amountword;  // указ на РАЗМ дин пам В ЗАПИСЯХ для сепарир стр-р(пока= 8 стр)
+	pcountnumword = &countnumword; //указ на счётч инкр-та СЛОВ = СТРУКТ при сепар-и 
 
 							// есть ли fini.dat  ==============================================================
 							// открытие=проверка сущ-вания ini файла пользов настр "fini.dat"__________________		
@@ -130,11 +133,14 @@ int main(int argc, const char ** argv, const char** env)
 			else
 			{
 				// СЧИТЫВАЕМ INI файл в д пам pmemini!!!
-				size_t result = fread(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);
-				fclose(pFini);  // cчитал и закрыл ф-л ))
-				printf("  Выделена дин пам din1name = %d Bytes \n\
+				size_t result = fread(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);				
+				if(result != 0)
+				{	printf("  Выделена дин пам din1name = %d Bytes \n\
  под ini структуру-настройки программы и заполнена настр из ini файла\n",
-					result);			// debug sizeof(struct inidat));
+						sizeof(struct inidat));			// debug sizeof(struct inidat));
+				}
+				fclose(pFini);  // cчитал и закрыл ф-л ))
+
 				printf("  Выделена дин пам din1name = %d Bytes \n\
  под ini структуру-настройки программы и заполнена настр из ini файла\n",
 					sizeof(struct inidat));			// debug sizeof(struct inidat));
@@ -177,8 +183,8 @@ int main(int argc, const char ** argv, const char** env)
 			//~~~~ Начальное самое первое выдел пам *pmemword под сеп и поехали! прост блок ==============
 			{
 				printf("  Размер памяти под одну структуру %d байт\n", sizeof(struct word));
-				amountmem = MAX_WORD * sizeof(struct word);  //размер (байт) начально выд-мой памяти 
-				pmemword = (struct word *) malloc(amountmem);   //самое первое выделение памяти 
+				amountword = MAX_WORD;  //размер ЗАПИСЕЙ начально выделенн 
+				pmemword = (struct word *) malloc(amountword * sizeof(struct word));   //самое первое выделение памяти 
 																//  под сепарацию и занесения строк в структуры 
 																//временно - начальное количество MAX_WORD 
 				if (pmemword == NULL)printf("Не выделенна память под punsort \n");
@@ -188,15 +194,14 @@ int main(int argc, const char ** argv, const char** env)
 			}
 
 			//~~~~~~~~~    далее (подготовка аргументов?) вызов ф-ции сепаррования - sepmini() ------   
-			pamountmem = &amountmem;  // указ на РАЗМ дин пам БАЙТ для сепарир стр-р(пока= 8 стр)
-			pcountnumword = &countnumword; //указ на счётч инкр-та СЛОВ = СТРУКТ при сепар-и 
+			
 										   // pmemword - указ на МАССИВ СТРУКТУР (word) для отсепарирования token()
 										   //pmemtxtbuf - указ на дин массив неразбитого текста - копии входн файла
-										   //argv[1] - из ком строки имя для отладки printf
-
+										  
 										   // ВЫЗОВ СЕПАРИРОВАНИЯ  long amountword = *pcountnumword / sizeof(struct word); 
-			pmemword = sepmini(pmemword, pamountmem, pmemtxtbuf, pcountnumword, TEXTIN);
-
+			//pmemword = sepmini(pmemword, pamountword, pmemtxtbuf, pcountnumword, TEXTIN);
+			// sepmini2(struct word *pmemarray, int *pamountword, pcountnumword, char *pmemtxtbuf);
+			pmemword = sepmini2(pmemword, pamountword, pcountnumword, pmemtxtbuf);
 			free(pmemtxtbuf);
 
 			//===~~~~~~~~  далее запись в файл базу WORD_nosort сепарированных но несортированных структур ===========				

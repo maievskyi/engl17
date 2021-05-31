@@ -13,6 +13,7 @@
 #define QUANTITYCHARNAME 256 //?? кол-во байт в одной записи в масс имён ф-в прогр ??
 #define QUANTITYNAME 1 // кол-во записей элементов стр-тур в массиве имён ф-в программы
 // #define d ((&struct word a.c)-(&struct word a)) 
+#define TEXT
 #define TEXTD //вывод считанн текста до сепарац  debug
 //#define SEPARATED  // sepmini()
 //#define M_SORT		// main()
@@ -26,18 +27,28 @@
 
 //ф-я возвр указатель на д память с отсепар словами - str word *pmemword
 // заранее созданный и переданный в ф-ю,
-// pamountmem указ на РАЗМЕР д пам str word
+// pamountword указ на РАЗМЕР д пам str word
 //multipl коэфф умнож при нехват дин памяти при token() 
 //pmemtxtbuf указ. на дин массив неразбитого текста - копии входн файла
 //pcount - указатель числа подсчитанных слов при сепарир
 // нужен для точного размера массива (несортированного) структур с англ словами
 // arv1 имя передаваемого через ком строку входного файла - нужен только для fprint()????
-struct word * sepmini(struct word *pmemword, long *pamountmem, char *pmemtxtbuf, int *pcount, char const *arv1);  //ф-я новая
+struct word * sepmini(struct word *pmemword, long *pamountword, char *pmemtxtbuf, int *pcount, char const *arv1);  //ф-я новая
 	//ф-я увелич размер int size дин памяти struct word *mem до размера *pnewsize до 
 	//размера *pnewsize  и передающая в него содерж старой памяти struct word *pmemword 
 	// и возвр ????????????????? указ на нов память
-struct word * sepmini2(struct word *pmemword, long *pamountmem, char *pmemtxtbuf, int *pcount, char *nametext);  //ф-я новая
-struct word *extensmem(struct word *pmemword, long *pamountmem, long newamountword, int *pcountnumword);
+struct word * sepmini2(struct word *pmemarray, int *pamountword, int *pcountwordlok, char *pmemtxtbuf);  //ф-я новая
+// pmemarray - ук на массив структур word, psizearray - указ на число структур в массиве
+// pcountwordlok - ук на счётчик слов pmemtxtbufpmemtxtbuf - ук на д память с входн текстом 
+struct word *extensmem(struct word *pmemword, long *pamountword, long newamountword, int *pcountnumword);
+//struct word *extensmem2(struct word *pmemword, int *psizearray, int *pcountwordlok, int multipl);
+
+struct word *extensmem2(struct word *pmemarray, int *psizearray, int *pcountwordlok, int multipl);
+// pmemarray - ук на массив структур word, psizearray - указ на число структур в массиве
+// pcountwordlok - ук на счётчик слов,  multipl - в сколько раз увелич память
+//выделяет нов дин пам pnewsizemem увеличенного разм в multipl раз
+//копирует содержимое из старой памяти
+//присваивает памяти указатель *pmemword
 
 char* writebase2(FILE *phddfile, char * namefilehdd, struct word *pmemword, int countnumword);	// 
 	// phddfile указ на hdd файл в котором сохранять базу слов 
