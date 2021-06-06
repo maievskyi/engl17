@@ -7,6 +7,7 @@
 //#define VARTOKEN nodebug
 //#define RENAME ok
 //#define ALPHABET ok
+#define M_SORT
 #include<stdlib.h>
 #include<stdio.h>
 #include <string.h>
@@ -205,9 +206,9 @@ int main(int argc, const char ** argv, const char** env)
 			pmemword = sepmini2(pmemword, pamountword, pcountnumword, pmemtxtbuf);
 			free(pmemtxtbuf);
 
-//===~~~~~~~~  далее запись в файл базу WORD_nosort сепарированных но несортированных структур ===========				
+//==========  далее запись в файл базу WORD_nosort сепарированных но несортированных структур ===========				
 			//---~~~~~~ для несортировнного массива преобразов имени XXX_nosort.dat вызовом ф-и rename2()
-			char *pnamewordnosort;  //указ д строки для преобраз.rename имя ф "argv[1]_nosort.dat"
+			char *pnamewordnosort;  //указ д строки для преобраз.rename имя ф "TEXTIN_nosort.dat"
 			{	pnamewordnosort = rename2(TEXTIN, "_nosort.dat", 4);
 			}
 			//~~~~~~~~~~~~ запись в WORD hdd файл(заранее переим) базу несортир структур ---///////////////  
@@ -219,7 +220,7 @@ int main(int argc, const char ** argv, const char** env)
 			//,?? возврат указ имя файла с  структурами ( ----- )???? 
 			puts(pnamewordnosort);		//debug вывод имени .hdd несортированных слов
 
-			//~~~~~~~~~~  занесение в ф ini "fini.dat" <- ИМЕНИ XXX_nosort.dat из дин памяти  ~~~~~~~~   	
+//============= занесение в ф ini "fini.dat" <- ИМЕНИ XXX_nosort.dat из дин памяти  =============   	
 			//~~~~~~~  сначала изменение в дин пам pFini <- ИМЕНИ  XXX_nosort.dat ~~~~~~~~~
 			{pmemini->idname = 0;
 			strncpy(pmemini->ininamenosortf, pnamewordnosort, EN1);
@@ -236,13 +237,38 @@ int main(int argc, const char ** argv, const char** env)
 			fwrite(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);//fini.dat
 			fclose(pFini);	//поработал и закрыл )) или ещё добавлять настойки? 
 
+// Перед сортировкой преобразование имени в XXX_sort.dat  =====================
+			char *pnamesortword = NULL;  // указат на дин строка-имя  файла "argv[1]_sort.dat"
+			pnamesortword = rename2(TEXTIN, "_sort.dat", 4);  // д п выдел ф rename2()
+			puts(pnamesortword); 		//debug
+// Выделение д памяти pmemsortword под сортированный массив [pcountnumword]  ===========
+			pmemsortword = (struct word *) malloc((*pcountnumword) * sizeof(struct word));
+			//pmemsortword-глоб указ = выделение д пам стрктур под сортировку слов
+			if (pmemsortword == NULL)printf("Не выделенна память под pmemsortword \n");
+			else printf("  Выделенна память psort = %d Bytes \n  под %d сортированных структур \
+  и поехали! сортировать\n",
+				(*pcountnumword) * sizeof(struct word), (*pcountnumword));
+//Перенос в эту д память pmemsortword структур из pmemword  =============
+			int temp = 0;
+			for (temp = 0; temp < *pcountnumword; temp++)
+			{
+				*(pmemsortword + temp) = *(pmemword + temp); //копирование
+#ifdef M_SORT 
+				printf("Структуры скопированы в нов массb для алфавитной сортировки --> \n");
+					printf("m_sort %d - %s \n", temp, pmemsortword[temp].en);  // отладка
+#endif
+			}
+//Вызов алфавитной сортировки и сокращение повторов  ==============
+
+
 //=========================================================================================================
 //=========================================================================================================
 		};  // end открытие входного text00.txt файла ................................
 	}	// end "если хотите изменить настройки урока ? - нажмите 'y'"...............
 
 	else
-	{  // извлекаем настройки старого fini.dat и работаем с уже ранее открывавшимся уроком и текстом
+	{  // извлекаем настр. старого fini.dat и работаем с уже ранее открывавшимся уроком и 
+		// отсортированным текстом
 		puts("\n извлекаем настройки старого fini.dat_____ \n");
 
 
