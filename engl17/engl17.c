@@ -62,7 +62,7 @@ int main(int argc, const char ** argv, const char** env)
 			sizeof(struct inidat));			// debug
 
 											//и !!!! дальнейшие настроек дополнительно к настр по умолчани
-		memset(pmemini, NULL, sizeof(struct inidat)); //    заполн. нулями
+		memset(pmemini, '\0', sizeof(struct inidat)); //    заполн. нулями
 
 													  // открывается нов fini.dat на запись-чтение
 		err = fopen_s(&pFini, "fini.dat", "w+b");
@@ -178,9 +178,6 @@ int main(int argc, const char ** argv, const char** env)
  под ini структуру-настройки программы и заполнена настр из ini файла\n",
 					sizeof(struct inidat));			// debug sizeof(struct inidat));
 			}
-			
-
-			
 
 			//~~~~ Начальное самое первое выдел пам *pmemword под сеп и поехали! прост блок ==============
 			{
@@ -220,8 +217,8 @@ int main(int argc, const char ** argv, const char** env)
 			//,?? возврат указ имя файла с  структурами ( ----- )???? 
 			puts(pnamewordnosort);		//debug вывод имени .hdd несортированных слов
 
-//============= занесение в ф ini "fini.dat" <- ИМЕНИ XXX_nosort.dat из дин памяти  =============   	
-			//~~~~~~~  сначала изменение в дин пам pFini <- ИМЕНИ  XXX_nosort.dat ~~~~~~~~~
+//============= занесение в ф ini "fini.dat" <- ИМЕНИ - XXX_nosort.dat из дин памяти  =======   	
+			//~~~~~~~  сначала изменение в дин пам pFini <- ИМЕНИ - XXX_nosort.dat ~~~~~~~~~
 			{pmemini->idname = 0;
 			strncpy(pmemini->ininamenosortf, pnamewordnosort, EN1);
 			}
@@ -231,7 +228,10 @@ int main(int argc, const char ** argv, const char** env)
 			if (err)
 			{
 				puts("\n Ошибка! \n Неудача отытия ранее созданного ф-ла имён пользователя \n");
-				system("pause");
+				//удалить из д памяти pmemini->ininamenosortf <- ИМЕНИ - XXX_nosort.dat 
+				size_t tlen = strlen(pmemini->ininamenosortf);
+				memset(pmemini->ininamenosortf, NULL, tlen );
+				system("pause"); 
 				exit(1);
 			}
 			fwrite(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);//fini.dat
@@ -254,11 +254,12 @@ int main(int argc, const char ** argv, const char** env)
 			{
 				*(pmemsortword + temp) = *(pmemword + temp); //копирование
 #ifdef M_SORT 
-				printf("Структуры скопированы в нов массb для алфавитной сортировки --> \n");
-					printf("m_sort %d - %s \n", temp, pmemsortword[temp].en);  // отладка
+				printf("m_sort %d - %s \n", temp, pmemsortword[temp].en);  // отладка
 #endif
 			}
-//Вызов алфавитной сортировки и сокращение повторов  ==============
+			printf("Структуры скопированы в нов массb для алфавитной сортировки --> \n");
+
+			//Вызов алфавитной сортировки и сокращение повторов  ==============
 
 
 //=========================================================================================================
