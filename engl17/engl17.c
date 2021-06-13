@@ -8,6 +8,7 @@
 //#define RENAME ok
 //#define ALPHABET ok
 #define M_SORT
+//#define NO_SORT
 #include<stdlib.h>
 #include<stdio.h>
 #include <string.h>
@@ -253,7 +254,7 @@ int main(int argc, const char ** argv, const char** env)
 			for (temp = 0; temp < *pcountnumword; temp++)
 			{
 				*(pmemsortword + temp) = *(pmemword + temp); //копирование
-#ifdef M_SORT 
+#ifdef NO_SORT 
 				printf("m_sort %d - %s \n", temp, pmemsortword[temp].en);  // отладка
 #endif
 			}
