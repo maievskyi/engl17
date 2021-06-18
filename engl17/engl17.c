@@ -45,8 +45,22 @@ int main(int argc, const char ** argv, const char** env)
 	pamountword = &amountword;  // указ на РАЗМ дин пам В ЗАПИСЯХ для сепарир стр-р(пока= 8 стр)
 	pcountnumword = &countnumword; //указ на счётч инкр-та СЛОВ = СТРУКТ при сепар-и 
 
-							// есть ли fini.dat  ==============================================================
-							// открытие=проверка сущ-вания ini файла пользов настр "fini.dat"__________________		
+
+//// созд-ся д пам pmemini, заполн по ум-нию, откр pFini и зап д пам в ф поток
+	pmemini = (struct inidat*)malloc(sizeof(struct inidat)); //созд д пам
+	if (pmemini == NULL)printf("Не выделена память ini настройки программы \n");
+	else printf("  Выделена дин пам din1name = %d Bytes \n\
+ под ini структуру-настройки программы \n",
+		sizeof(struct inidat));			// debug
+
+	//и !!!! дальнейшие настроек дополнительно к настр по умолчани
+	//  пока  заполн. нулями, далее стандартн настройки
+	//	ТУТ позже взамен 0 - стандартн настройки
+	memset(pmemini, '\0', sizeof(struct inidat)); 
+
+							
+//// есть ли fini.dat  ==============================================================
+//// открытие=проверка сущ-вания ini файла пользов настр "fini.dat"==================		
 	err = fopen_s(&pFini, "fini.dat", "r+b");// открывается ли на чтение с дозаписью
 	if (err)	// значит не открылся fini.dat								
 	{
@@ -54,24 +68,17 @@ int main(int argc, const char ** argv, const char** env)
 		puts("\n !!! ранее НЕ существовал ini файл пользователя  \n");
 		system("pause");
 
-		//// далее созд-ся д пам pmemini, заполн по ум-нию, откр pFini и зап д пам в ф поток
+		
 
-		pmemini = (struct inidat*)malloc(sizeof(struct inidat)); //созд д пам
-		if (pmemini == NULL)printf("Не выделена память ini настройки программы \n");
-		else printf("  Выделена дин пам din1name = %d Bytes \n\
- под ini структуру-настройки программы \n",
-			sizeof(struct inidat));			// debug
-
-											//и !!!! дальнейшие настроек дополнительно к настр по умолчани
-		memset(pmemini, '\0', sizeof(struct inidat)); //    заполн. нулями
-
-													  // открывается нов fini.dat на запись-чтение
+	// открывается новый fini.dat на запись-чтение
 		err = fopen_s(&pFini, "fini.dat", "w+b");
 		if (err)	// значит нет fini.dat								
 		{
-			puts("\n !!! не создался ini файл пользователя \n");
+			puts("\n !!! не создался новый ini файл пользователя \n");
 			perror("fini.dat");
+			free(pmemini);  //освоб памяти
 			system("pause");
+			exit(1);
 		}
 		else
 		{
