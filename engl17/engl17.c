@@ -231,7 +231,7 @@ int main(int argc, const char ** argv, const char** env)
 				puts("\n Ошибка! \n Неудача отытия ранее созданного ф-ла имён пользователя \n");
 				//удалить из д памяти pmemini->ininamenosortf <- ИМЕНИ - XXX_nosort.dat 
 				size_t tlen = strlen(pmemini->ininamenosortf);
-				memset(pmemini->ininamenosortf, NULL, tlen );
+ 				memset(pmemini->ininamenosortf, NULL, tlen );
 				system("pause"); 
 				exit(1);
 			}
