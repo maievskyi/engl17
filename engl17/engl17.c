@@ -45,7 +45,7 @@ int main(int argc, const char ** argv, const char** env)
 	pamountword = &amountword;  // указ на РАЗМ дин пам В ЗАПИСЯХ для сепарир стр-р(пока= 8 стр)
 	pcountnumword = &countnumword; //указ на счётч инкр-та СЛОВ = СТРУКТ при сепар-и 
 
-
+/////////////////////////////////////////////////////////////////////////////////
 //// созд-ся д пам pmemini, заполн по ум-нию, откр pFini и зап д пам в ф поток
 	pmemini = (struct inidat*)malloc(sizeof(struct inidat)); //созд д пам
 	if (pmemini == NULL)printf("Не выделена память ini настройки программы \n");
