@@ -70,7 +70,7 @@ int main(int argc, const char ** argv, const char** env)
 
 		
 
-	// открывается новый fini.dat на запись-чтение
+	// открывается НОВЫЙ fini.dat на запись-чтение
 		err = fopen_s(&pFini, "fini.dat", "w+b");
 		if (err)	// значит нет fini.dat								
 		{
@@ -78,7 +78,7 @@ int main(int argc, const char ** argv, const char** env)
 			perror("fini.dat");
 			free(pmemini);  //освоб памяти
 			system("pause");
-			exit(1);
+			exit(1);   
 		}
 		else
 		{
@@ -90,7 +90,7 @@ int main(int argc, const char ** argv, const char** env)
 
 		fclose(pFini);	// закрыть файловый поток из которого читаются имена файлов
 		free(pmemini);	// освободить память pmemini
-		err = fopen_s(&pFini, "fini.dat", "r+b");// открывается ли на чтение с дозаписью
+		err = fopen_s(&pFini, "fini.dat", "r+b");// переоткрывается ли на чте с дозаписью
 		if (err)	// значит не открылся fini.dat								
 		{
 			perror("fini.dat");
@@ -103,7 +103,7 @@ int main(int argc, const char ** argv, const char** env)
 		}
 
 		system("pause");
-	} // end if "есть ли fini.dat" ...................................................
+	} // end if "есть ли fini.dat r+b" ...................................................
 	  /*else   // значит есть fini.dat  ____________________________________________
 	  {
 	  }*/
