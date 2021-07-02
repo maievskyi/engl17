@@ -104,14 +104,28 @@ int main(int argc, const char ** argv, const char** env)
 		}
 
 		system("pause");
-	} // end if "есть ли  стар fini.dat r+b" = нет  ......................................
-	 
+	} // end if "есть ли  стар fini.dat r+b" = нет  ,,,,,,,,,,,,,,,,,,,,,,,,
+	else
+	{
+// вывод имени старого уже разбитого текста
+
+
+	}// end if else"есть ли  стар fini.dat r+b" = да  ......................................
+
 	  // значит есть УЖЕ ПО ЛЮБОМУ открытый fini.dat  ____________________________________________
 	// тут надо бы секунд на 5 вывести на экран имеющиеся настройки pmemini
 	//// оставить НАСТРОЙКИ КАК ЕСТЬ ИЛИ ИЗМЕНИТЬ для нового урока =================
-	puts("\n если хотите изменить настройки урока или текст ?  - тогда нажмите 'y'  \n");
+	puts("\n если хотите изменить текст или настройки урока   ?  - тогда нажмите 'y'  \n");
 	if ('y' == getch(stdin))//  ==================================================
 	{
+		//если разбить новый текст ?  - тогда нажмите 'y'
+		puts("\n если разбить новый текст ?  - тогда нажмите 'y'\n");
+		if ('y' == getch(stdin))//  ==================================================
+		{
+
+
+		}
+//_________________________________________________________________________________
 		puts("\n пробуем открыть text00.txt и создаём другой fini.dat  _____ \n");
 	//// открытие входного text00.txt файла =======================================
 		err = fopen_s(&pFtxt, TEXTIN, "rb");// инициал-тся указ=ль FILE *pFtxt 
@@ -209,7 +223,7 @@ int main(int argc, const char ** argv, const char** env)
 			//pmemword = sepmini(pmemword, pamountword, pmemtxtbuf, pcountnumword, TEXTIN);
 			// sepmini2(struct word *pmemarray, int *pamountword, pcountnumword, char *pmemtxtbuf);
 			pmemword = sepmini2(pmemword, pamountword, pcountnumword, pmemtxtbuf);
-			free(pmemtxtbuf);
+			free(pmemtxtbuf);	//освободить пам буфер входн текста
 
 //==========  далее запись в файл базу WORD_nosort сепарированных но несортированных структур ===========				
 			//---~~~~~~ для несортировнного массива преобразов имени XXX_nosort.dat вызовом ф-и rename2()
@@ -244,7 +258,7 @@ int main(int argc, const char ** argv, const char** env)
 			}
 			fwrite(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);//fini.dat
 			fclose(pFini);	//поработал и закрыл )) или ещё добавлять настойки???????? 
-
+//_________________________________________________________________________________________
 // Перед сортировкой преобразование имени в XXX_sort.dat  =====================
 			char *pnamesortword = NULL;  // указат на дин строка-имя  файла "argv[1]_sort.dat"
 			pnamesortword = rename2(TEXTIN, "_sort.dat", 4);  // д п выдел ф rename2()
@@ -279,6 +293,7 @@ int main(int argc, const char ** argv, const char** env)
 	{  // извлекаем настр. старого fini.dat и работаем с уже ранее открывавшимся уроком и 
 		// отсортированным текстом
 		puts("\n извлекаем настройки старого fini.dat_____ \n");
+		puts(" работаем с отсортированным ранее текстом_____ \n");
 
 
 	} //end if else "хотите ли создать другой fini.dat"
