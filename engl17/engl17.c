@@ -114,150 +114,155 @@ int main(int argc, const char ** argv, const char** env)
 
 	  // значит есть УЖЕ ПО ЛЮБОМУ открытый fini.dat  ____________________________________________
 	// тут надо бы секунд на 5 вывести на экран имеющиеся настройки pmemini
-	//// оставить НАСТРОЙКИ КАК ЕСТЬ ИЛИ ИЗМЕНИТЬ для нового урока =================
+	//// 1-й оставить урок КАК ЕСТЬ ИЛИ ИЗМЕНИТЬ ТЕКСТ или НАСТРОЙКИ для нового урока =======
 	puts("\n если хотите изменить текст или настройки урока   ?  - тогда нажмите 'y'  \n");
 	if ('y' == getch(stdin))//  ==================================================
 	{
-		//если разбить новый текст ?  - тогда нажмите 'y'
-		puts("\n если разбить новый текст ?  - тогда нажмите 'y'\n");
-		if ('y' == getch(stdin))//  ==================================================
+		//если разбить новый текст ? - тогда нажмите 'y' откр-е нового входн text00.txt файла
+		puts("\n если разбить НОВЫЙ текст ?  - тогда нажмите 'y'\n");
+		if ('y' == getch(stdin))//  открытие нового входного text00.txt файла ==============
 		{
-
-
-		}
-//_________________________________________________________________________________
-		puts("\n пробуем открыть text00.txt и создаём другой fini.dat  _____ \n");
-	//// открытие входного text00.txt файла =======================================
-		err = fopen_s(&pFtxt, TEXTIN, "rb");// инициал-тся указ=ль FILE *pFtxt 
-											//T  и открывается в режиме (rb)-  "txt2.txt" 
-		if (err) {
-			printf("В папке нет требуемого входного ф-ла %s \n", TEXTIN);
-			perror("нет требуемого "TEXTIN); system("pause"); exit(1);
-		}
-		else {
-			puts("открывается указ-ль FILE *pFtxt ф потока на text00.txt \n");
-		//// перенос ф-ла текста в оперативную динам память, для цього ---> ======================
-			
-			long txtSize = 0;	////~~~~~~~  определяем РАЗМЕР входн ***.txt файла в байтах  -----	 
-			fseek(pFtxt, 0, SEEK_END);// уст-ем текущ поз в конец ф-ла, и смещ на 0 относ конца ф-ла
-			txtSize = ftell(pFtxt); //в txtSize = ПОЛУЧАЕМ РАЗМЕР В БАЙТАХ
-			fseek(pFtxt, 0, SEEK_SET);	// перевести текущую поз на начало файла
-
-			printf("Размер памяти входного текста из ф-ла .txt = %d Bytes \n", txtSize);
-
-		//// выделить дин память pmemtxtbuf для хран-я содерж-го из ф-л а =====================
-			char *pmemtxtbuf;			//--->  локальн указатель на дин пам. pmemtxtbuf 
-										//		для хранения содерж-го из вх-го файла...........
-										// копируемого и подлежащего разбиению токенами
-			pmemtxtbuf = (char*)malloc(sizeof(char) * (txtSize)+1); 
-			if (pmemtxtbuf == NULL)
-			{
-				fputs("Ошибка памяти", stderr);
-				exit(2);
+			puts("\n пробуем открыть text00.txt и создаём другой fini.dat  _____ \n");
+			//// открытие входного text00.txt файла =======================================
+			err = fopen_s(&pFtxt, TEXTIN, "rb");// инициал-тся указ=ль FILE *pFtxt 
+												//T  и открывается в режиме (rb)-  "txt2.txt" 
+			if (err) {
+				printf("В папке нет требуемого входного ф-ла %s \n", TEXTIN);
+				perror("нет требуемого "TEXTIN); system("pause"); exit(1);
 			}
-			printf("\n~ Д пам. pmemtxtbuf для хранения текста из ф-ла %s = %d byts ~\n\n", TEXTIN, (sizeof(char) * txtSize) + 1);
+			else {  //текстовый файл из папки открылся
+				puts("открывается указ-ль FILE *pFtxt ф потока на text00.txt \n");
+				//// перенос ф-ла текста в оперативную динам память, для цього ---> ======================
 
-		//// ------из pFtxt считываем файл в буфер	pmemtxtbuf!!!------------------------------------
-			size_t result = fread(pmemtxtbuf, sizeof(char), txtSize, pFtxt);  // СЧИТЫВАЕМ файл в буфер!!!
-			if (result != txtSize)  //если не совпало число считанных байт
-			{
-				if (feof(pFtxt)) printf("Преждевременное достижение конца файла.\n");
-				else printf("Ошибка при чтении файла.\n  result=%d\t txtSize=%d\n", result, txtSize);
-				system("pause");
-				exit(3);
-			}
-			fclose(pFtxt);	//поработал и закрыл )) файловый ввод из которого читается входной текст
-			pmemtxtbuf[txtSize] = '\0';  //!!!!!!!!!!!!!!!!!!!!!!!!!!! иначе в конце крякозябы
+				long txtSize = 0;	////~~~~~~~  определяем РАЗМЕР входн ***.txt файла в байтах  -----	 
+				fseek(pFtxt, 0, SEEK_END);// уст-ем текущ поз в конец ф-ла, и смещ на 0 относ конца ф-ла
+				txtSize = ftell(pFtxt); //в txtSize = ПОЛУЧАЕМ РАЗМЕР В БАЙТАХ
+				fseek(pFtxt, 0, SEEK_SET);	// перевести текущую поз на начало файла
+
+				printf("Размер памяти входного текста из ф-ла .txt = %d Bytes \n", txtSize);
+
+				//// выделить дин память pmemtxtbuf для хран-я содерж-го из ф-л а =====================
+				char *pmemtxtbuf;			//--->  локальн указатель на дин пам. pmemtxtbuf 
+											//		для хранения содерж-го из вх-го файла...........
+											// копируемого и подлежащего разбиению токенами
+				pmemtxtbuf = (char*)malloc(sizeof(char) * (txtSize)+1);
+				if (pmemtxtbuf == NULL)
+				{
+					fputs("Ошибка памяти", stderr);
+					exit(2);
+				}
+				printf("\n~ Д пам. pmemtxtbuf для хранения текста из ф-ла %s = %d byts ~\n\n", TEXTIN, (sizeof(char) * txtSize) + 1);
+
+				//// ------из pFtxt считываем файл в буфер	pmemtxtbuf!!!------------------------------------
+				size_t result = fread(pmemtxtbuf, sizeof(char), txtSize, pFtxt);  // СЧИТЫВАЕМ файл в буфер!!!
+				if (result != txtSize)  //если не совпало число считанных байт
+				{
+					if (feof(pFtxt)) printf("Преждевременное достижение конца файла.\n");
+					else printf("Ошибка при чтении файла.\n  result=%d\t txtSize=%d\n", result, txtSize);
+					system("pause");
+					exit(3);
+				}
+				fclose(pFtxt);	//поработал и закрыл )) файл ввод  входного текста
+				pmemtxtbuf[txtSize] = '\0';  //!!!!!!!!!!!!!!!!!!!!!!!!!!! иначе в конце крякозябы
 
 #ifdef TEXT	//~~~~~ текст выв-ся в станд. поток вывода консоли НА ЭКРАН (для  отладки)============ =======
-			if (puts(pmemtxtbuf) == EOF) {
-				printf("Ошибка при записи из текстов файла \n");
-			}  // -> -> -> 
-			else {
-				printf(" Файл текста  считан-записан в ф-ции main нормально\n");
-				printf(" ~~~ !!!!!Текст выше - это содержащийся в файле %s ~~~       \n \
+				if (puts(pmemtxtbuf) == EOF) {
+					printf("Ошибка при записи из текстов файла \n");
+				}  // -> -> -> 
+				else {
+					printf(" Файл текста  считан-записан в ф-ции main нормально\n");
+					printf(" ~~~ !!!!!Текст выше - это содержащийся в файле %s ~~~       \n \
 	!!!!!!!!на который указывала ком строка, далее сепарирование \n", TEXTIN);	//  ???*
-			}
+				}
 #endif//~~~~~~~~~~~~~~~~~~~~~ после отл можнои убрать  ~~~~~~~~~~~~~~~
 
-			// INI созд-ся д пам pmemini, счит из ф поток и дополняем настр к умолч-ю 
-			//потом записываем в ф поток 
+				// INI созд-ся д пам pmemini, счит из ф поток и дополняем настр к умолч-ю 
+				//потом записываем в ф поток 
+//???????????????????????????????????????????????????????????????????????????????????????
+				pmemini = (struct inidat*)malloc(sizeof(struct inidat)); //созд д пам
+				if (pmemini == NULL)printf("Не выделена память ini настройки программы \n");
+				else
+				{
+					// СЧИТЫВАЕМ INI файл в д пам pmemini!!!
+					size_t result = fread(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);
+					if (result != 0)
+					{
+						printf("  Выделена дин пам din1name = %d Bytes \n\
+ под ini структуру-настройки программы и заполнена настр из ini файла\n",
+							sizeof(struct inidat));			// debug sizeof(struct inidat));
+					}
+					fclose(pFini);  // cчитал и закрыл ф-л ))
 
-			pmemini = (struct inidat*)malloc(sizeof(struct inidat)); //созд д пам
-			if (pmemini == NULL)printf("Не выделена память ini настройки программы \n");
-			else
-			{
-				// СЧИТЫВАЕМ INI файл в д пам pmemini!!!
-				size_t result = fread(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);				
-				if(result != 0)
-				{	printf("  Выделена дин пам din1name = %d Bytes \n\
+					printf("  Выделена дин пам din1name = %d Bytes \n\
  под ini структуру-настройки программы и заполнена настр из ini файла\n",
 						sizeof(struct inidat));			// debug sizeof(struct inidat));
 				}
-				fclose(pFini);  // cчитал и закрыл ф-л ))
+//????????????????????????????  зачем здесь открыался и перезаписывался ini файл и д память
+				//~~~~ Начальное самое первое выдел пам *pmemword под сепар и поехали! прост блок ==============
+				{
+					printf("  Размер памяти под одну структуру %d байт\n", sizeof(struct word));
+					amountword = MAX_WORD;  //размер ЗАПИСЕЙ начально выделенн 
+					pmemword = (struct word *) malloc(amountword * sizeof(struct word));   //самое первое выделение памяти 
+																						   //  под сепарацию и занесения строк в структуры 
+																						   //временно - начальное количество MAX_WORD 
+					if (pmemword == NULL)printf("Не выделенна память под punsort \n");
+					else printf("  Выделенна память punsort = %d Bytes \n  под %d неотсортированных структур \
+  и ПОЕХАЛИ! СЕПАРИРОВАТЬ\n",
+						MAX_WORD * sizeof(struct word), MAX_WORD);				//    отладка
+				}
 
-				printf("  Выделена дин пам din1name = %d Bytes \n\
- под ini структуру-настройки программы и заполнена настр из ini файла\n",
-					sizeof(struct inidat));			// debug sizeof(struct inidat));
-			}
+				//~~~~~~~~~    далее (подготовка аргументов?) вызов ф-ции сепаррования - sepmini() ------   
 
-			//~~~~ Начальное самое первое выдел пам *pmemword под сеп и поехали! прост блок ==============
-			{
-				printf("  Размер памяти под одну структуру %d байт\n", sizeof(struct word));
-				amountword = MAX_WORD;  //размер ЗАПИСЕЙ начально выделенн 
-				pmemword = (struct word *) malloc(amountword * sizeof(struct word));   //самое первое выделение памяти 
-																//  под сепарацию и занесения строк в структуры 
-																//временно - начальное количество MAX_WORD 
-				if (pmemword == NULL)printf("Не выделенна память под punsort \n");
-				else printf("  Выделенна память punsort = %d Bytes \n  под %d неотсортированных структур \
-  и ПОЕХАЛИ! сепарировать\n",
-					MAX_WORD * sizeof(struct word), MAX_WORD);				//    отладка
-			}
+				// pmemword - указ на МАССИВ СТРУКТУР (word) для отсепарирования token()
+				//pmemtxtbuf - указ на дин массив неразбитого текста - копии входн файла
 
-			//~~~~~~~~~    далее (подготовка аргументов?) вызов ф-ции сепаррования - sepmini() ------   
-			
-		// pmemword - указ на МАССИВ СТРУКТУР (word) для отсепарирования token()
-		//pmemtxtbuf - указ на дин массив неразбитого текста - копии входн файла
-										  
-		// ВЫЗОВ СЕПАРИРОВАНИЯ  long amountword = *pcountnumword / sizeof(struct word); 
-			//pmemword = sepmini(pmemword, pamountword, pmemtxtbuf, pcountnumword, TEXTIN);
-			// sepmini2(struct word *pmemarray, int *pamountword, pcountnumword, char *pmemtxtbuf);
-			pmemword = sepmini2(pmemword, pamountword, pcountnumword, pmemtxtbuf);
-			free(pmemtxtbuf);	//освободить пам буфер входн текста
+				// ВЫЗОВ СЕПАРИРОВАНИЯ  long amountword = *pcountnumword / sizeof(struct word); 
+				//pmemword = sepmini(pmemword, pamountword, pmemtxtbuf, pcountnumword, TEXTIN);
+				// sepmini2(struct word *pmemarray, int *pamountword, pcountnumword, char *pmemtxtbuf);
+				pmemword = sepmini2(pmemword, pamountword, pcountnumword, pmemtxtbuf);
+				free(pmemtxtbuf);	//освободить пам буфер входн текста
 
-//==========  далее запись в файл базу WORD_nosort сепарированных но несортированных структур ===========				
-			//---~~~~~~ для несортировнного массива преобразов имени XXX_nosort.dat вызовом ф-и rename2()
-			char *pnamewordnosort;  //указ д строки для преобраз.rename имя ф "TEXTIN_nosort.dat"
-			{	pnamewordnosort = rename2(TEXTIN, "_nosort.dat", 4);
-			}
-			//~~~~~~~~~~~~ запись в WORD hdd файл(заранее переим) базу несортир структур ---///////////////  
-			writebase2(pFnosort, pnamewordnosort, pmemword, countnumword);//
-			 //pnosortFile - указ на откр внутр ф-ции hdd файл в котором сохранять базу слов 
-			//pnamewordnosort - уже сформированное ранее имя ф-ла для hdd ("argv[1]_nosort.dat")
-		    // pmemword - указ на дин массив НЕСОРТ структур, 
-			// countnumword - число несорт структур
-			//,?? возврат указ имя файла с  структурами ( ----- )???? 
-			puts(pnamewordnosort);		//debug вывод имени .hdd несортированных слов
+									//==========  далее запись в файл базу WORD_nosort сепарированных но несортированных структур ===========				
+									//---~~~~~~ для несортировнного массива преобразов имени XXX_nosort.dat вызовом ф-и rename2()
+				char *pnamewordnosort;  //указ д строки для преобраз.rename имя ф "TEXTIN_nosort.dat"
+				{	pnamewordnosort = rename2(TEXTIN, "_nosort.dat", 4);
+				}
+				//~~~~~~~~~~~~ запись в WORD hdd файл(заранее переим) базу несортир структур ---///////////////  
+				writebase2(pFnosort, pnamewordnosort, pmemword, countnumword);
+					//pnosortFile - указ на откр внутр ф-ции hdd файл в котором сохранять базу слов 
+					//pnamewordnosort - уже сформированное ранее имя ф-ла для hdd ("argv[1]_nosort.dat")
+					// pmemword - указ на дин массив НЕСОРТ структур, 
+					// countnumword - число несорт структур
+					//,?? возврат указ имя файла с  структурами ( ----- )???? 
+				puts(pnamewordnosort);		//debug вывод имени .hdd несортированных слов
 
-//============= занесение в ф ini "fini.dat" <- ИМЕНИ - XXX_nosort.dat из дин памяти  =======   	
-			//~~~~~~~  сначала изменение в дин пам pFini <- ИМЕНИ - XXX_nosort.dat ~~~~~~~~~
-			{pmemini->idname = 0;
-			strncpy(pmemini->ininamenosortf, pnamewordnosort, EN1);
-			}
+				//============= занесение в ф ini "fini.dat" <- ИМЕНИ - XXX_nosort.dat из дин памяти  =======   	
+				//~~~~~~~  сначала изменение в дин пам pFini <- ИМЕНИ - XXX_nosort.dat ~~~~~~~~~
+				{pmemini->idname = 0;
+				strncpy(pmemini->ininamenosortf, pnamewordnosort, EN1);
+				}
 
-			//~~~~~~~~~~  запись в ф ini "fini.dat" <- ИМЕНИ XXX_nosort.dat из дин памяти  ~~~~~~~~   	
-			err = fopen_s(&pFini, "fini.dat", "r+b");//XXX_nosrt.dat сохр в ф-л "fini.dat"
-			if (err)
-			{
-				puts("\n Ошибка! \n Неудача отытия ранее созданного ф-ла имён пользователя \n");
-				//удалить из д памяти pmemini->ininamenosortf <- ИМЕНИ - XXX_nosort.dat 
-				size_t tlen = strlen(pmemini->ininamenosortf);
- 				memset(pmemini->ininamenosortf, NULL, tlen );
-				system("pause"); 
-				exit(1);
-			}
-			fwrite(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);//fini.dat
-			fclose(pFini);	//поработал и закрыл )) или ещё добавлять настойки???????? 
+				//~~~~~~~~~~  запись в ф ini "fini.dat" <- ИМЕНИ XXX_nosort.dat из дин памяти  ~~~~~~~~   	
+				err = fopen_s(&pFini, "fini.dat", "r+b");//XXX_nosrt.dat сохр в ф-л "fini.dat"
+				if (err)
+				{
+					puts("\n Ошибка! \n Неудача отытия ранее созданного ф-ла имён пользователя \n");
+					//удалить из д памяти pmemini->ininamenosortf <- ИМЕНИ - XXX_nosort.dat 
+					size_t tlen = strlen(pmemini->ininamenosortf);
+					memset(pmemini->ininamenosortf, NULL, tlen);
+					system("pause");
+					exit(1);
+				}
+				else
+				{
+					fwrite(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);//fini.dat
+					fclose(pFini);	//поработал и закрыл )) или ещё добавлять настойки???????? 
+				}
+				
+		}     //   end текстовый файл из папки открылся, отсепар-ся и запис-ся в pFnosort
+
+//_________________________________________________________________________________
+// здесь if( нажать Y если изменить только настройки для существующего сепарированного текста)
 //_________________________________________________________________________________________
 // Перед сортировкой преобразование имени в XXX_sort.dat  =====================
 			char *pnamesortword = NULL;  // указат на дин строка-имя  файла "argv[1]_sort.dat"
@@ -281,14 +286,18 @@ int main(int argc, const char ** argv, const char** env)
 			}
 			printf("Структуры скопированы в нов массb для алфавитной сортировки --> \n");
 
-			//далее вызов АЛФАВИТНОЙ сортировки и сокращение повторов  ==============
-
+			//далее вызов АЛФАВИТНОЙ или другой сортировки из ini и сокращение повторов =======
+			//
 
 //=========================================================================================================
 //=========================================================================================================
-		};  // end открытие входного text00.txt файла ................................
-	}	// end "как есть или хотите изменить настройки урока ? - нажмите 'y'"...............
+		}  // end открытие нового входного text00.txt файла ,,,,,,,,перенос вверх???,,
 
+
+
+
+
+	}	// end "как есть или хотите изменить текст или настройки урока ? - нажмите 'y'"...............
 	else
 	{  // извлекаем настр. старого fini.dat и работаем с уже ранее открывавшимся уроком и 
 		// отсортированным текстом
