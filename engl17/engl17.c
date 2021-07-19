@@ -296,11 +296,20 @@ int main(int argc, const char ** argv, const char** env)
 			printf("Структуры скопированы в нов массb для алфавитной сортировки --> \n");
 
 			//далее вызов АЛФАВИТНОЙ или другой сортировки из ini и сокращение повторов =======
-			//
+			// созд указат на ф-ю сортировки
+			int(*pfTemp) = measurealph;
 			puts("\n если Алфавитная сортировука  ?  - тогда нажмите '1'\n");
 			if ('1' == getch(stdin))//  вносить изменения в настройки урока ============
 			{
-
+				int disloc = 0;  // далее Сортировка id по разным критериям
+				pmemsortword = idsort(pmemsortword, pcountnumword, pfTemp, disloc);
+				printf("This \"Print\" inside to engl16.c - \n");
+				int m;
+				for (m = 0; m < *pcountnumword; m++)
+				{
+					pmemsortword[m].repeat = 0;
+					printf(" _ %3d.  alphabet_id=%3d id=%3d  _( %s ) repeat=[ %d ]   \n", m, pmemsortword[m].repeat_id, pmemsortword[m].id, pmemsortword[m].en, pmemsortword[m].repeat);    // temp
+				}
 
 			}	//end вызов АЛФАВИТНОЙ сортировки
 //=========================================================================================================
