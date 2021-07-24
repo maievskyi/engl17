@@ -16,10 +16,9 @@
 #define TEXT
 #define TEXTD //вывод считанн текста до сепарац  debug
 //#define SEPARATED  // sepmini()
-//#define M_SORT		// main()
 #define SORT
 //#define ALPHABET // Отсортирован alphabet3()
-#define IDSORT
+
 //#define REDUCT3  //_________________________________
 
 

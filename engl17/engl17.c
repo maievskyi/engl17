@@ -9,12 +9,16 @@
 //#define ALPHABET ok
 #define M_SORT
 //#define NO_SORT
+
+//#include<iostream>
 #include<stdlib.h>
 #include<stdio.h>
 #include <string.h>
+#include <conio.h>
+#include <Windows.h>
 #include"engl17.h"  //
 
-
+ 
 FILE *pFtxt; //---> текст который читать - argv[1] первый аргумент ком строки "txt2.txt"
 FILE *pFini;	//---> указатель на структ. файл в котором сохранять файлов fini.dat
 FILE *pFnosort;	//---> указатель на структ. ф в котор сохр несорт базу слов - argv[1]_nosort.dat"
@@ -303,13 +307,19 @@ int main(int argc, const char ** argv, const char** env)
 			{
 				int disloc = 0;  // далее Сортировка id по разным критериям
 				pmemsortword = idsort(pmemsortword, pcountnumword, pfTemp, disloc);
-				printf("This \"Print\" inside to engl16.c - \n");
+				pmemsortword = reduct3(pmemsortword, pcountnumword);
+
+				printf("This \"Print\" inside to engl17.c after idsort() reduct3() - \n");
 				int m;
 				for (m = 0; m < *pcountnumword; m++)
 				{
-					pmemsortword[m].repeat = 0;
-					printf(" _ %3d.  alphabet_id=%3d id=%3d  _( %s ) repeat=[ %d ]   \n", m, pmemsortword[m].repeat_id, pmemsortword[m].id, pmemsortword[m].en, pmemsortword[m].repeat);    // temp
+					//pmemsortword[m].repeat = 0;
+					printf(" _ %3d.  alphabet_id=%3d id=%3d  _( %s ) [repeat= %d ]   \n", m, pmemsortword[m].repeat_id, pmemsortword[m].id, pmemsortword[m].en, pmemsortword[m].repeat);    // temp
 				}
+				// printf("\n Отсортированных англ слов =  и т д \n ");
+				printf("\n ~~~ Отсортированных англ слов =  и т д \n ");
+				printf("\n ~~~ Всего в тексте англ слов =  и т д \n ");
+				printf("\n ~~~ Уже изученных из них англ слов =  и т д \n ");
 
 			}	//end вызов АЛФАВИТНОЙ сортировки
 //=========================================================================================================

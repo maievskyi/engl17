@@ -3,6 +3,7 @@
 
 #define _CRT_SECURE_NO_WARNINGS  //   ?? подробнее об предупреждениях ??
 #define TOKENDEBUG nodebug
+//#define IDSORT //IDSORT This \"Print\" inside to idsort() in engllib17.c 
 //#define ALPHABET ok
 #include<stdlib.h>
 #include<stdio.h>
@@ -169,7 +170,11 @@ struct word * sepmini2(struct word *pmemarray, int *psizearray, int *pcountwordl
 		token1[ix] = (char)tolower(token1[ix]);	// запмсь  последнего =/0 символа ?
 												// КОПИР АНГЛ СЛ В ПОЛЕ en[]  ============================================
 		strcpy_s((*(pmemarray + counttoken)).en, EN, token1);
+
+
+#ifdef SEPMINI2
 		printf(" en[%d] = %s \n", counttoken, (*(pmemarray + counttoken)).en); //t temp
+#endif // 
 		counttoken += 1;	// ?? возможно лишнее дублирование счётчика
 		*pcountwordlok += 1;// ?? возможно лишнее дублирование счётчика	
 		token1 = strtok_s(NULL, seps, &next_token1);
@@ -391,17 +396,18 @@ struct word * idsort(struct word *pin, int *psize, int(*pmeasure)(const void *, 
 	printf(" \n\n~~~ Далее находимся внутри inside idsort() -  id = %d \n", pin[0].id);
 	memmove(ptemp, pin, (*psize) * sizeof(struct word));//* sizeof(struct word)
 
-	printf(" \n~~~ Далее после применения qsort() выв Отсортир-й массив стр-р ~~~ id = %d \n", pin[0].id);
+	printf(" \n~~~ Далее после прим-ия qsort() выв Отсорт-й масс. стр-р ~ id = %d \n", pin[0].id);
 	// temp
 	qsort(ptemp, *psize, sizeof(struct word), pmeasure);	//вызов сортировки
 	
 	int m;//printf("    \n");
 #ifdef IDSORT
-	printf("This \"Print\" inside to idsort() in engllib16.c - \n");
+	printf("\n#ifdef IDSORT This \"Print\" inside to idsort() in engllib17.c   \n");
 	
 	for (m = 0; m < *psize; m++)				//
 	{													//
-		printf("m- %3d.  id=%3d ___ ( %s )___[ %d ]   \n", m, ptemp[m].id, ptemp[m].en, ptemp[m].repeat);    // temp
+		//printf("m- %3d.  id=%3d ___ ( %s )___[ %d ]   \n", m, ptemp[m].id, ptemp[m].en, ptemp[m].repeat);    // temp
+		printf("m- %3d.  id=__  ( %s )__ [ _ ]   \n", m,  ptemp[m].en);    // temp
 	}
 #endif
 	printf("    \n");
