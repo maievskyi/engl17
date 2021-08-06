@@ -284,6 +284,66 @@ int main(int argc, const char ** argv, const char** env)
 
 // здесь надо пробовать вставлять базовую алфавитную сортирорвку и далее "танцевать" от неё
 			// т е это будет БАЗОВЫЙ ФАЙЛ РАЗБИТОГО ТЕКСТА
+			//____________________________________  БУДЕТ ПОВТОРЕНИЕ ???? _________________
+			// Перед сортировкой преобразование имени в XXX_sort.dat  =====================
+			char *pnamesortword = NULL;  // указат на дин строка-имя  файла "argv[1]_sort.dat"
+			pnamesortword = rename2(TEXTIN, "_alphsort.dat", 4);  // д п выдел ф rename2()
+			puts(pnamesortword);
+			// Выделение д памяти pmemsortword под сортированный массив [pcountnumword]  ===========
+			pmemsortword = (struct word *) malloc((*pcountnumword) * sizeof(struct word));
+			//pmemsortword-глоб указ = выделение д пам стрктур под сортировку слов
+			if (pmemsortword == NULL)printf("Не выделенна память под pmemsortword \n");
+			else printf("  Выделенна память psort = %d Bytes \n  под %d сортированных структур \
+  и поехали! сортировать\n",
+				(*pcountnumword) * sizeof(struct word), (*pcountnumword));
+			//Перенос в эту д память pmemsortword структур из pmemword  =============
+			int temp = 0;
+			for (temp = 0; temp < *pcountnumword; temp++)
+			{
+				*(pmemsortword + temp) = *(pmemword + temp); //копирование
+#ifdef NO_SORT 
+				printf("m_sort %d - %s \n", temp, pmemsortword[temp].en);  // отладка
+#endif
+			}
+			printf("Структуры скопированы в нов массb для алфавитной сортировки --> \n");
+/////// //////////////////////////////////////////////////////////////////////////////////
+			int(*pfTemp) = measurealph; //указ на ф сортировки
+			int disloc = 0;  // далее Сортировка id по разным критериям
+			pmemsortword = idsort(pmemsortword, pcountnumword, pfTemp, disloc);
+			pmemsortword = reduct3(pmemsortword, pcountnumword);
+
+
+			//~~~~~~~~~~  запись в ф ini "fini.dat" <- ИМЕНИ XXX_alphsort.dat из дин памяти  ~~~~~~~~   	
+			err = fopen_s(&pFini, "fini.dat", "r+b");//XXX_nosrt.dat сохр в ф-л "fini.dat"
+			if (err)
+			{
+				puts("\n Ошибка! \n Неудача отытия ранее созданного ф-ла имён пользователя \n");
+				//удалить из д памяти pmemini->ininamenosortf <- ИМЕНИ - XXX_alphsort.dat 
+				size_t tlen = strlen(pmemini->ininamealphsortf);
+				memset(pmemini->ininamealphsortf, NULL, tlen);
+				system("pause");
+				exit(1);
+			}
+			else
+			{
+				//~~~~~~~  сначала изменение в дин пам pFini <- ИМЕНИ - XXX_nosort.dat ~~~~~~~~~
+				{pmemini->idname = 0;
+				strncpy(pmemini->ininamealphsortf, pnamesortword, EN1);
+				}
+				fwrite(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);//fini.dat
+				fclose(pFini);	//поработал и закрыл )) или ещё добавлять настойки???????? 
+			}
+
+
+			printf("This \"Print\" create alphabetwordbase inside to engl17.c after idsort() reduct3() - \n");
+			int m;
+			for (m = 0; m < *pcountnumword; m++)
+			{
+				//pmemsortword[m].repeat = 0;
+				printf(" _ %3d.  alphabet_id=%3d id=%3d  _( %s ) [repeat= %d ]   \n", m, pmemsortword[m].repeat_id, pmemsortword[m].id, pmemsortword[m].en, pmemsortword[m].repeat);    // temp
+			}
+
+
 
 
 		}  // end открытие нового входного text00.txt файла ,,,,,,,,,,,,,,,,,,,,,,,
@@ -303,7 +363,7 @@ int main(int argc, const char ** argv, const char** env)
 		}	//end   вносить изменения в настройки урока .................
 
 
-
+/*
 //____________________________________  БУДЕТ ПОВТОРЕНИЕ ???? _________________
 // Перед сортировкой преобразование имени в XXX_sort.dat  =====================
 			char *pnamesortword = NULL;  // указат на дин строка-имя  файла "argv[1]_sort.dat"
@@ -326,7 +386,7 @@ int main(int argc, const char ** argv, const char** env)
 #endif
 			}
 			printf("Структуры скопированы в нов массb для алфавитной сортировки --> \n");
-
+*/
 // ВЫБОР СОРТИРОВКИ===============================================================
 			//далее вызов АЛФАВИТНОЙ или другой сортировки из ini и сокращение повторов =======
 			// созд указат на ф-ю сортировки
@@ -349,15 +409,15 @@ int main(int argc, const char ** argv, const char** env)
 			if (flagkey == 1)//  Алфавитная сортировка - настройки урока ============
 			{
 				int(*pfTemp) = measurealph;
-				int disloc = 0;  // далее Сортировка id по разным критериям
+				int disloc = 0;  // далее Сортировка id по разным критериям 
 				pmemsortword = idsort(pmemsortword, pcountnumword, pfTemp, disloc);
-				pmemsortword = reduct3(pmemsortword, pcountnumword);
+				//  pmemsortword = reduct3(pmemsortword, pcountnumword);
 
-				printf("This \"Print\" inside to engl17.c after idsort() reduct3() - \n");
+				printf("This \"Print\" inside настр урока engl17.c after idsort() reduct3() - \n");
 				int m;
 				for (m = 0; m < *pcountnumword; m++)
 				{
-					//pmemsortword[m].repeat = 0;
+					//pmemsortword[m].repeat =  0;
 					printf(" _ %3d.  alphabet_id=%3d id=%3d  _( %s ) [repeat= %d ]   \n", m, pmemsortword[m].repeat_id, pmemsortword[m].id, pmemsortword[m].en, pmemsortword[m].repeat);    // temp
 				}
 				// printf("\n Отсортированных англ слов =  и т д \n ");
