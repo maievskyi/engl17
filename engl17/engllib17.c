@@ -371,16 +371,7 @@ struct word * alphabet4(struct word *aa, int *psize, int(*pmeasure)(const void *
 	return aa;
 };//    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   END alphabet4()   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
-  ///////////////////==========     ф-я алфавитного сравнения строк  =======/////////////////////////////////
-int measurealph(const void * a, const void * b)		//   
-													// ф -я измеряющая ENGL алфавитн порядок располож двух стукт(по указателям на них) 
-{
-	const char * string1 = (((struct word *)a)->en);
-	const char * string2 = (((struct word *)b)->en);
-	int temp = _stricmp(string1, string2);	// если первый арг больше второго
-											// то возврат положительного числа
-	return temp;
-};//    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   END measalph()   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
 
   ///////////////////////===========  Сортировка по разным id структуры word   ========////////////////////
 struct word * idsort(struct word *pin, int *psize, int(*pmeasure)(const void *, const void *), int disloc)
@@ -393,6 +384,7 @@ struct word * idsort(struct word *pin, int *psize, int(*pmeasure)(const void *, 
 	struct word * ptemp = NULL;
 	ptemp = (struct word *) malloc((*psize) * sizeof(struct word));
 	if (ptemp == NULL)printf("idsort() Не выделенна память под врем массив ptemp \n");
+
 	printf(" \n\n~~~ Далее находимся внутри inside idsort() -  id = %d \n", pin[0].id);
 	memmove(ptemp, pin, (*psize) * sizeof(struct word));//* sizeof(struct word)
 
@@ -416,13 +408,26 @@ struct word * idsort(struct word *pin, int *psize, int(*pmeasure)(const void *, 
 		ptemp[m].repeat_id = m;
 	}
 
-	for (m = 0; m < *psize; m++)
-	{
-		pin[m] = ptemp[m];    // копирование массива (для return) из локального
-	}
+	//for (m = 0; m < *psize; m++)
+	//{
+	//	pin[m] = ptemp[m];    // копирование массива (для return) из локального
+	//}
+	memmove(pin, ptemp, (*psize) * sizeof(struct word));//* sizeof(struct word)
+
 	free(ptemp);
 	return pin;
 };//    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   END idsort()   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+  ///////////////////==========     ф-я алфавитного сравнения строк  =======/////////////////////////////////
+int measurealph(const void * a, const void * b)		//   
+// ф -я измеряющая ENGL алфавитн порядок располож двух стукт(по указателям на них) 
+{
+	const char * string1 = (((struct word *)a)->en);
+	const char * string2 = (((struct word *)b)->en);
+	int temp = _stricmp(string1, string2);	// если первый арг больше второго
+											// то возврат положительного числа
+	return temp;
+};//    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   END measalph()   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
   ///////////////////==========     ф-я сравнения строк по повторениям =======///////////
 int measurerepeat(const void * a, const void * b)		//   
@@ -497,21 +502,22 @@ struct word * reduct3(struct word *pa, int *psize)
 
 	////////// ======= созд временн динам массив ptempstr с незаполенными индексами   ----------------
 	struct word *ptempstr = (struct word*)malloc(*psize * sizeof(struct word));  // указ на 
-																				 //временн массив с незаполенными индексами
-																				 // в нём будут записываться эл-ты мас-ва структур но уже без повторений
+			//временн массив с незаполенными индексами
+			// в нём будут записываться эл-ты мас-ва структур но уже без повторений
 	if (ptempstr == NULL)printf("не выделенна память под temp в reduct3() \n");
 	struct word *prev = (struct word*)malloc(sizeof(struct word));  //нужен указатель 
 																	//на единичный (текущий) элемент структуры (для сравнения)  
 	if (prev == NULL)printf("не `	````````````````выделенна память под prev в reduct3() \n");
-	for (i = 0; i<n; i++)	(((struct word *)ptempstr + i)->repeat) = 1;		//заполн 1-цей всех полей repeat массива ptempstr[]
+	//заполн 1-цей всех полей repeat массива ptempstr[] ==================
+	for (i = 0; i<n; i++)	(((struct word *)ptempstr + i)->repeat) = 1;		
 	i = 0;
-	ptempstr[0] = pa[0];	// перенос в врем масс нулевого элемента массива переданного через аргументы
+	ptempstr[0] = pa[0];	// перенос в новый врем масс нулевого элем мас-ва перед-го в ф-цию
 	prev[0] = ptempstr[0]; // запомнен предыдущий элемент (для сравнения)
 	int t = 0;		// счётчик  индексов нового массива ptempstr[t] (меньше чем i)
 					// 
 	for (i = 1; i<n; i++) // перебор c 1-го индекса всех индексов только входного массива pa[i] переданного 
 	{		//через аргумент  в функц и сравнение с следующим запомненным в *prev предыдущим текст полем *->en
-		if (measurealph(prev, (pa + i)) == 0)  // если следующий равен текущему.....
+		if (measurealph(prev, (pa + i)) == 0)  // если след-й равен текущему(есть повтор слова)
 		{
 			(((struct word *)ptempstr + t)->repeat) += 1;  // увелич поле repeat текущего ptempstr[t] не инкрементируя t
 		}
@@ -524,7 +530,9 @@ struct word * reduct3(struct word *pa, int *psize)
 		}
 	}								// конец перебора всех индексов массива pa[i] переданного через аргумент в функц
 	*psize = (t + 1);		// новый размер дин массива структур
-	struct word *pret = (struct word*)malloc(*psize * sizeof(struct word));  // указ на заполенн временн массив для возвр из ф
+
+	// указ на заполенн временн массив для возвр из ф
+	struct word *pret = (struct word*)malloc(*psize * sizeof(struct word)); 
 	if (pret == NULL)printf("не выделенна память под temp в reduct() \n");
 	// перезапись сокращённого массива temp в уменьшенн разм д п pret
 	int k = 0;

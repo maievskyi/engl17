@@ -54,7 +54,7 @@ char* writebase2(FILE *phddfile, char * namefilehdd, struct word *pmemword, int 
 	// phddfile указ на hdd файл в котором сохранять базу слов 
 	//  namefilehdd - имя на диске; pmemword - указ на массив структур, 
 	//countnumword - число несорт структур; возврат указ имя файла структур - namefilehdd;
-	//ф-я сама открывает r+и и потом закрывает файл на hdd 
+	//ф-я сама ОТКРЫВАЕТ ФАЙЛ r+ и потом закрывает файл на hdd 
 
 struct word * alphabet3(struct word *aa, int *psize);//
 	// возврат указатель на память с отсортир по алфав массивом структ, 

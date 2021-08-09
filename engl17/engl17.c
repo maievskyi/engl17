@@ -284,9 +284,10 @@ int main(int argc, const char ** argv, const char** env)
 
 // здесь надо пробовать вставлять базовую алфавитную сортирорвку и далее "танцевать" от неё
 			// т е это будет БАЗОВЫЙ ФАЙЛ РАЗБИТОГО ТЕКСТА
-			//____________________________________  БУДЕТ ПОВТОРЕНИЕ ???? _________________
-			// Перед сортировкой преобразование имени в XXX_sort.dat  =====================
-			char *pnamesortword = NULL;  // указат на дин строка-имя  файла "argv[1]_sort.dat"
+			//____________________________________ ______________________ _________________
+			// Перед сортировкой преобразование имени в XXX_alphsort.dat  =====================
+			char *pnamesortword = NULL;  //укз дин строка c преобраз-ным имя ф "XXX_sort.dat"
+
 			pnamesortword = rename2(TEXTIN, "_alphsort.dat", 4);  // д п выдел ф rename2()
 			puts(pnamesortword);
 			// Выделение д памяти pmemsortword под сортированный массив [pcountnumword]  ===========
@@ -296,7 +297,8 @@ int main(int argc, const char ** argv, const char** env)
 			else printf("  Выделенна память psort = %d Bytes \n  под %d сортированных структур \
   и поехали! сортировать\n",
 				(*pcountnumword) * sizeof(struct word), (*pcountnumword));
-			//Перенос в эту д память pmemsortword структур из pmemword  =============
+
+			//=== Перенос в эту д память pmemsortword структур из pmemword  =============
 			int temp = 0;
 			for (temp = 0; temp < *pcountnumword; temp++)
 			{
@@ -314,7 +316,7 @@ int main(int argc, const char ** argv, const char** env)
 
 
 			//~~~~~~~~~~  запись в ф ini "fini.dat" <- ИМЕНИ XXX_alphsort.dat из дин памяти  ~~~~~~~~   	
-			err = fopen_s(&pFini, "fini.dat", "r+b");//XXX_nosrt.dat сохр в ф-л "fini.dat"
+			err = fopen_s(&pFini, "fini.dat", "r+b");//XXX_alphsort.dat сохр в ф-л "fini.dat"
 			if (err)
 			{
 				puts("\n Ошибка! \n Неудача отытия ранее созданного ф-ла имён пользователя \n");
@@ -328,11 +330,19 @@ int main(int argc, const char ** argv, const char** env)
 			{
 				//~~~~~~~  сначала изменение в дин пам pFini <- ИМЕНИ - XXX_nosort.dat ~~~~~~~~~
 				{pmemini->idname = 0;
-				strncpy(pmemini->ininamealphsortf, pnamesortword, EN1);
+				strncpy(pmemini->ininamealphsortf, pnamesortword, EN1);//измен в дин пам pFini
 				}
-				fwrite(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);//fini.dat
+				fwrite(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);//измен в fini.dat
 				fclose(pFini);	//поработал и закрыл )) или ещё добавлять настойки???????? 
 			}
+//// Далее запись в ф "text00_alphsort.dat" базу слов по алфавиту
+//~~~~~~~~~~~~ запись в WORD hdd файл(заранее переим) базу алф-сортир структур ---////////////  
+			writebase2(pFsort, pnamesortword, pmemsortword, countnumword);
+			//pnosortFile - указ на откр внутр ф-ции hdd файл в котором сохранять базу слов 
+			//pnamesortword - уже сформированное ранее имя ф-ла для hdd ("argv[1]_alphsort.dat")
+			// pmemword - указ на дин массив НЕСОРТ структур, 
+			// countnumword - число структур
+			//,?? возврат указ имя файла с  структурами ( ----- )???? 
 
 
 			printf("This \"Print\" create alphabetwordbase inside to engl17.c after idsort() reduct3() - \n");
@@ -424,7 +434,7 @@ int main(int argc, const char ** argv, const char** env)
 				printf("\n ~~~ Отсортированных англ слов =  и т д \n ");
 				printf("\n ~~~ Всего в тексте англ слов =  и т д \n ");
 				printf("\n ~~~ Уже изученных из них англ слов =  и т д \n ");
-
+					
 			}	//end вызов АЛФАВИТНОЙ сортировки
 			else  // else вызов ДРУГОЙ сортировки
 			{
