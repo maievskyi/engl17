@@ -210,30 +210,7 @@ int main(int argc, const char ** argv, const char** env)
 				// INI созд-ся д пам pmemini, счит из ф поток и дополняем настр к умолч-ю 
 				//потом записываем в ф поток 
 //???????????????????????????????????????????????????????????????????????????????????????
-/**/
-//?????????????????????  зачем здесь открыался и перезаписывался ini файл надо убрать ??? 
-				err = fopen_s(&pFini, "fini.dat", "r+b");// открывается ли на ЧТЕНИЕ с дозаписью
-				if (err)	// НЕТ  СТАРОГО fini.dat "r+b" = нет. Делаем новый = "w+b"							
-				{			// (!!! только "r" в VS чтото не получилось)
-					perror("fini.dat");
-					puts("\n !!! почему-то не читается ini файл пользователя \n нажать ENYKEY  \n");
-					system("pause");
-				}
-					// СЧИТЫВАЕМ INI файл в д пам pmemini!!!
-					result = fread(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);
-					if (result != 0)
-					{
-						printf("В уже раее выделеную дин пам din1name = %d Bytes \n\
- под ini структ-настройки программы Записанны настр из ini файла\n",
-							sizeof(struct inidat));			// debug 
-					}
-					fclose(pFini);  // cчитал и закрыл ф-л ))
 
-					printf("  Дин пам din1name = %d Bytes \n\
- под ini структуру-настройки программы заполнена настр из ini файла\n",
-						sizeof(struct inidat));			// debug sizeof(struct inidat));
-
-//?????????????????????  зачем здесь открыался и перезаписывался ini файл надо убрать ???
 				//~~~~ Начальное самое первое выдел пам *pmemword под сепар и поехали! прост блок ==============
 				{
 					printf("  Размер памяти под одну структуру %d байт\n", sizeof(struct word));
@@ -302,11 +279,13 @@ int main(int argc, const char ** argv, const char** env)
 // здесь надо пробовать вставлять базовую алфавитную сортирорвку и далее "танцевать" от неё
 			// т е это будет БАЗОВЫЙ ФАЙЛ разбитого с АЛФАВИТНОЙ СОРТИРОРВКОЙ
 			//____________________________________ ______________________ _________________
+			/*
 			// Перед сортировкой преобразование имени в XXX_alphsort.dat  =====================
 			char *pnamesortword = NULL;  //укз дин строка c преобраз-ным имя ф "XXX_sort.dat"
 
 			pnamesortword = rename2(TEXTIN, "_alphsort.dat", 4);  // д п выдел ф rename2()
 			puts(pnamesortword);
+			*/
 			// Выделение д памяти pmemsortword под сортированный массив [pcountnumword]  ===========
 			pmemsortword = (struct word *) malloc((*pcountnumword) * sizeof(struct word));
 			//pmemsortword-глоб указ = выделение д пам стрктур под сортировку слов
@@ -327,12 +306,18 @@ int main(int argc, const char ** argv, const char** env)
 			printf("Структуры скопированы в нов массb для алфавитной сортировки --> \n");
 /////// //////////////////////////////////////////////////////////////////////////////////
 			int(*pfTemp) = measurealph; //указ на ф сортировки
-			int disloc = 0;  // далее Сортировка id по разным критериям
+			int disloc = 0;  //            далее Сортировка id по разным критериям
 			pmemsortword = idsort(pmemsortword, pcountnumword, pfTemp, disloc);
 			pmemsortword = reduct3(pmemsortword, pcountnumword);
 
 
-			//~~~~~~~~~~  запись в ф ini "fini.dat" <- ИМЕНИ XXX_alphsort.dat из дин памяти  ~~~~~~~~   	
+			//~~~~~~~~ Перед сортировкой преобразование имени в XXX_alphsort.dat  ========
+			char *pnamesortword = NULL;  //укз дин строка c преобраз-ным имя ф "XXX_sort.dat"
+
+			pnamesortword = rename2(TEXTIN, "_alphsort.dat", 4);  // д п выдел ф rename2()
+			puts(pnamesortword);
+
+			//~~~~~~~  запись в ф ini "fini.dat" <- ИМЕНИ XXX_alphsort.dat из дин памяти ====   	
 			err = fopen_s(&pFini, "fini.dat", "r+b");//XXX_alphsort.dat сохр в ф-л "fini.dat"
 			if (err)
 			{
@@ -345,14 +330,14 @@ int main(int argc, const char ** argv, const char** env)
 			}
 			else
 			{
-				//~~~~~~~  сначала изменение в дин пам pFini <- ИМЕНИ - XXX_nosort.dat ~~~~~~~~~
-				{pmemini->idname = 0;
-				strncpy(pmemini->ininamealphsortf, pnamesortword, EN1);//измен в дин пам pFini
+				//~~~~~  сначала изменение в дин пам pFini <- ИМЕНИ - XXX_alphsort.dat ~~~~~~~
+				{pmemini->idname = 0;   //?????
+				strncpy(pmemini->ininamealphsortf, pnamesortword, EN1);//зап поля в дин пам 
 				}
 				fwrite(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);//измен в fini.dat
-				fclose(pFini);	//поработал и закрыл )) или ещё добавлять настойки???????? 
+				fclose(pFini);	//поработал и закрыл )) или ещё добавлять настройки???????? 
 			}
-//// Далее запись в ф "text00_alphsort.dat" базу слов pmemsortword по алфавиту
+//// Далее запись в ф "text00_alphsort.dat" БАЗУ СЛОВ pmemsortword по алфавиту
 //~~~~~~~~~~~~ запись в WORD hdd файл(заранее переим) базу алф-сортир структур ---////////////  
 			writebase2(pFsort, pnamesortword, pmemsortword, countnumword);
 			//pnosortFile - указ на откр внутр ф-ции hdd файл в котором сохранять базу слов 
@@ -376,6 +361,23 @@ int main(int argc, const char ** argv, const char** env)
 		}  // end открытие нового входного text00.txt файла ,,,,,,,,,,,,,,,,,,,,,,,
 		else// если не открывать нов текст файл а раб с старым
 		{
+			// открыть ф ini и считать из него ИМЯ уже ранее алф-сортированной базы
+			err = fopen_s(&pFini, "fini.dat", "r+b");//XXX_alphsort.dat сохр в ф-л "fini.dat"
+			if (err)
+			{
+				puts("\n Ошибка! \n Неудача отытия ранее созданного ф-ла имён пользователя \n");
+				//????????????????????
+				//считать из д памяти pmemini->ininamenosortf <- ИМЕНИ - XXX_alphsort.dat 
+				size_t tlen = strlen(pmemini->ininamealphsortf);
+				memset(pmemini->ininamealphsortf, NULL, tlen);
+				system("pause");
+				exit(1);
+			}
+			else
+			{
+
+
+			}
 
 		}  // end if else  ..........................................................
 //_________________________________________________________________________________
