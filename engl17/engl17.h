@@ -108,9 +108,11 @@ struct word       // стр для хранения слов с переводо
 struct inidat       // стр для хранения польз настроек имён файлов и др
 {				//будут и другие поля;
 	int idname;
+	int sorttype; //выбор тип сортировки 0-алф(по умолч) 1-частот
 	char name[EN1];    //имя файла
 	char ininamenosortf[EN1];	//имя файла с несортрованн структ
 	char ininamealphsortf[EN1];		//имя файла с алфавитно-сорт. структ
+	char ininameafreqsortf[EN1];		//имя файла с частотно-сорт. структ
 
 					   //char namepath[EN1];	// c полным путём
 					   //int number;  // размер файла
