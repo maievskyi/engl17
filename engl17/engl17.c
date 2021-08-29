@@ -1,6 +1,9 @@
 ﻿
 //22/04/21 первый  вариант с передачей фиксиров. имени текста без ком стр
-// 
+//
+
+
+//надо бы проверить прав заполнения по умолчанию дин памяти и INI файла !!!
 
 
 #define _CRT_SECURE_NO_WARNINGS  //   ?? подробнее об предупреждениях ??
@@ -70,6 +73,10 @@ int main(int argc, const char ** argv, const char** env)
 	//  пока  заполн. нулями,
 	memset(pmemini, '\0', sizeof(struct inidat)); 
 	//	ТУТ позже взамен 0 - стандартн настройки
+	strncpy(pmemini->ininamealphsortf, "text00_alphsort.dat", EN1);
+	strncpy(pmemini->ininameafreqsortf, "text00_freqalphsort.dat", EN1);
+
+
 	//и !!!! дальнейшие настройки дополнительно к настр по умолчани
 							
 	//2) есть ли fini.dat  ==============================================================
@@ -99,6 +106,7 @@ int main(int argc, const char ** argv, const char** env)
 			// ПОПОЗЖЕ тут дописать в дин пам pmemini настр по умолчанию !!! ^^^^^^
 			pmemini->sorttype = 0; // по умолч алфав сортировка
 			strncpy(pmemini->ininamealphsortf, "text00_alphsort.dat", EN1);
+			strncpy(pmemini->ininameafreqsortf, "text00_freqalphsort.dat", EN1);
 			
 			//запись  стандартн по умлч настроек ИЗ ДИН ПАМЯТИ pmeminidat в ф fini.dat  ======		
 			size_t result = fwrite(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);
@@ -153,8 +161,10 @@ int main(int argc, const char ** argv, const char** env)
 	{
 		// 2) если открыть новый текст ? - тогда нажм 'y' откр-тие нового входн ф text00.txt 
 
-			//	2a)
-		puts("\n 2) если открыть НОВЫЙ текст ? - тогда нажмите 'y'\n");
+//============================================================================================
+
+			//	2a)  ================================================
+		puts("\n 2) если открыть и сортировать НОВЫЙ текст ? - тогда нажмите 'y'\n");
 		if ('y' == _getch(stdin))
 			//  открытие нового входного text00.txt файла  ==============
 		{
@@ -310,7 +320,7 @@ int main(int argc, const char ** argv, const char** env)
 			}
 			// надов конце блока free(pmemword);  // освободить д память pmemword
 			printf("Структуры скопированы в нов массb для ???-ной сортировки --> \n");
-/////// //////////////////////////////////////////////////////////////////////////////////
+/////// 
 			
 //// сдесь сделать надо выбор типа сортировки (из ini  )  ??? не надо-пусть алфавитн
 
@@ -367,9 +377,13 @@ int main(int argc, const char ** argv, const char** env)
 			free(pmemword);  // освободить д память pmemword c несортированными словами
 							 //!!!!! алф сортированный массив слов в д п pmemsortword !!!
 							 //!!!!! алф сортированный массив слов в ф text00_alphsort.dat 
-		}  // end открытие нового входного text00.txt файла ,,,,,,,,,,,,,,,,,,,,,,,
-		   //	2b) continue &&&&& ЕСЛИ НЕ ОТКРЫВАТЬ НОВ ТЕКСТ ФАЙЛ А РАБ С СТАРЫМ &&&&&
-		else	//	2b) ~~~ ЕСЛИ НЕ ОТКРЫВАТЬ НОВ ТЕКСТ ФАЙЛ А РАБ С СТАРЫМ ~~~~
+		}  // end открытие и сортировка нового входного text00.txt файла ,,,,,,,,,,,,,,,,
+
+
+//________________________________________________________________________________________
+
+		//___	2b) continue &&&& ЕСЛИ СЧИТЫВАТЬ И РАБ С СТАРЫМ ТXT ФАЙОМ  &&&&&
+		else	//	2b) ~~~ ЕСЛИ ОТКРЫВАТЬ НЕ НОВ ТЕКСТ ФАЙЛ А ОТКРЫТЬ СТАРЫЙ ~~~~
 		{
 			// открыть ф ini и считать из него ИМЯ уже ранее алф-сортированной базы ??????
 			// и считать из него тип сортировки
@@ -483,21 +497,93 @@ int main(int argc, const char ** argv, const char** env)
 				break;
 			}// нужной сортировки массив слов считан повторн из ф в д п pmemsortword
 						
-		}  // end 2b) else если не открывать нов текст файл а раб с старым  
+		}  // end 2b) else ЕСЛИ СЧИТЫВАТЬ И РАБ С СТАРЫМ ТXT ФАЙЛОМ  
+// Конец выбора стар или нов txt. Массив слов нужной сорт-ки находится в д п pmemsortword ____
 
-//______ Конец выбора текста - нужной сортировки массив слов находится в д п pmemsortword ____
+//=============================================================================================
 
-// здесь if( нажать Y если изменить только настройки для СУЩЕСТВУЮЩЕГО сепар? сортир?-го текста)
+// здесь if( наж Y если изменить ТОЛЬКО НАСТРОЙКИ для изучения открытого текста)
 		puts("\n 3) если ТОЛЬКО НОВЫЕ НАСТРОЙКИ ?  - тогда нажмите 'y'\n");
 		if ('y' == _getch(stdin))//  вносить изменения в настройки урока ============
 		{
 			// открыть разбитый и сорт текст из файла  ininamenosortf[EN1] -?????
-			// он уже есть в pmemsortword ??????????????????????????????????????
+			// ! он уже есть в pmemsortword ??????????????????????????????????????
+			// запросить нов наст и пересортировать базовый массив структур
+			//РУЧНОЙ ВЫБОР СОРТИРОВКИ===============================================================
+			//далее вызов АЛФАВИТНОЙ или другой сортировки  =======
+			// созд указат на ф-ю сортировки
 
+			puts("\n если Алфавитная сортировка  ?  - тогда нажмите '1'\n \
+    Частотная сортировка - тогда нажмите  '2' \n");
+
+			while ((ttime--) >= 0) // (DELAYKEY)
+			{
+				Sleep(500);  // задержка мс
+				flagkey = 1; // значение по концу времени
+				if (_kbhit())  //--- ф-я видит любое наж клав
+				{
+					flagkey = _getch();
+					break;
+				}
+			}  //далее алф сорт
+			
+			if (flagkey == '1')//  Алфавитная сортировка - настройки урока ============
+			{
+				int(*pfTemp) = measurealph;
+				int disloc = 0;  // далее Сортировка id по разным критериям 
+				pmemsortword = idsort(pmemsortword, pcountnumword, pfTemp, disloc);
+				//  pmemsortword = reduct3(pmemsortword, pcountnumword);
+
+				printf("This \"Print\" inside настр урока engl17.c after idsort() reduct3() - \n");
+				int m;
+				for (m = 0; m < *pcountnumword; m++)
+				{
+					//pmemsortword[m].repeat =  0;
+					printf(" _ %3d.  alphabet_id=%3d id=%3d  _( %s ) [repeat= %d ]   \n", m, pmemsortword[m].repeat_id, pmemsortword[m].id, pmemsortword[m].en, pmemsortword[m].repeat);    // temp
+				}
+
+				// Записать в файл XXX_alphsort.dat !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				writebase2(pFsort, pmemini->ininamealphsortf, pmemsortword, countnumword);
+
+
+				// printf("\n Отсортированных англ слов =  и т д \n ");
+				printf("\n ~~~ Отсортированных англ слов =  и т д \n ");
+				printf("\n ~~~ Всего в тексте англ слов =  и т д \n ");
+				printf("\n ~~~ Уже изученных из них англ слов =  и т д \n ");
+
+			}	//end вызов АЛФАВИТНОЙ сортировки
+
+			if (flagkey == '2')//  Частотная сортировка - настройки урока ============
+			{
+				int(*pfTemp) = measurerepeatalph;
+				int disloc = 0;  // далее Сортировка id по разным критериям 
+				pmemsortword = idsort(pmemsortword, pcountnumword, pfTemp, disloc);
+				//  pmemsortword = reduct3(pmemsortword, pcountnumword);
+
+				// Записать в файл XXX_freqsort.dat !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+				
+ 				writebase2(pFfreqsort, pmemini->ininameafreqsortf, pmemsortword, countnumword);
+
+				printf("This \"Print\" inside настр урока engl17.c after measurerepeatalph() - \n");
+				int m;
+				for (m = 0; m < *pcountnumword; m++)
+				{
+					//pmemsortword[m].repeat =  0;
+					printf(" _ %3d.  alphabet_id=%3d id=%3d  _( %s ) [repeat= %d ]   \n", m, pmemsortword[m].repeat_id, pmemsortword[m].id, pmemsortword[m].en, pmemsortword[m].repeat);    // temp
+				}
+				// printf("\n Отсортированных англ слов =  и т д \n ");
+				printf("\n ~~~ Отсортированных англ слов =  и т д \n ");
+				printf("\n ~~~ Всего в тексте англ слов =  и т д \n ");
+				printf("\n ~~~ Уже изученных из них англ слов =  и т д \n ");
+
+			}//   end  Частотная сортировка - настройки урока
 		}	//end 3) если ТОЛЬКО НОВЫЕ НАСТРОЙКИ вносить в старую (уже существ-ую) базу слов  
 
 /*
-//____________________________________  БУДЕТ ПОВТОРЕНИЕ ???? _________________
+//     ____________________________  БУДЕТ ПОВТОРЕНИЕ ???? _________________
 // Перед сортировкой преобразование имени в XXX_sort.dat  =====================
 			char *pnamesortword = NULL;  // указат на дин строка-имя  файла "argv[1]_sort.dat"
 			pnamesortword = rename2(TEXTIN, "_sort.dat", 4);  // д п выдел ф rename2()
@@ -520,87 +606,25 @@ int main(int argc, const char ** argv, const char** env)
 			}
 			printf("Структуры скопированы в нов массb для алфавитной сортировки --> \n");
 */
-// ВЫБОР СОРТИРОВКИ===============================================================
-			//далее вызов АЛФАВИТНОЙ или другой сортировки из ini и сокращение повторов =======
-			// созд указат на ф-ю сортировки
-			
-			puts("\n если Алфавитная сортировка  ?  - тогда нажмите '1'\n \
-    Частотная сортировка - тогда нажмите  '2' \n");
-			
-			while ((ttime--)>=0)
+			else  // else вызов ДРУГОЙ сортировки ????????????????????????
 			{
-				Sleep(500);  // задержка мс
-				flagkey = 1; // значение по концу времени
-				if(0!=_kbhit())
-				{
-					if ('1' == _getch(stdin))// Алфавитная сортировка - настройки урока 
-					{
-					flagkey = 1;
-					break;
-					}				
-				}
-			}
-			if (flagkey == 1)//  Алфавитная сортировка - настройки урока ============
-			{
-				int(*pfTemp) = measurealph;
-				int disloc = 0;  // далее Сортировка id по разным критериям 
-				pmemsortword = idsort(pmemsortword, pcountnumword, pfTemp, disloc);
-				//  pmemsortword = reduct3(pmemsortword, pcountnumword);
-
-				printf("This \"Print\" inside настр урока engl17.c after idsort() reduct3() - \n");
-				int m;
-				for (m = 0; m < *pcountnumword; m++)
-				{
-					//pmemsortword[m].repeat =  0;
-					printf(" _ %3d.  alphabet_id=%3d id=%3d  _( %s ) [repeat= %d ]   \n", m, pmemsortword[m].repeat_id, pmemsortword[m].id, pmemsortword[m].en, pmemsortword[m].repeat);    // temp
-				}
-				// printf("\n Отсортированных англ слов =  и т д \n ");
-				printf("\n ~~~ Отсортированных англ слов =  и т д \n ");
-				printf("\n ~~~ Всего в тексте англ слов =  и т д \n ");
-				printf("\n ~~~ Уже изученных из них англ слов =  и т д \n ");
-					
-			}	//end вызов АЛФАВИТНОЙ сортировки
-			else  // else вызов ДРУГОЙ сортировки
-			{
-				if (flagkey == 2)//  Частотная сортировка - настройки урока ============
-				{
-					int(*pfTemp) = measurerepeatalph;
-					int disloc = 0;  // далее Сортировка id по разным критериям 
-					pmemsortword = idsort(pmemsortword, pcountnumword, pfTemp, disloc);
-					//  pmemsortword = reduct3(pmemsortword, pcountnumword);
-
-					printf("This \"Print\" inside настр урока engl17.c after measurerepeatalph() - \n");
-					int m;
-					for (m = 0; m < *pcountnumword; m++)
-					{
-						//pmemsortword[m].repeat =  0;
-						printf(" _ %3d.  alphabet_id=%3d id=%3d  _( %s ) [repeat= %d ]   \n", m, pmemsortword[m].repeat_id, pmemsortword[m].id, pmemsortword[m].en, pmemsortword[m].repeat);    // temp
-					}
-					// printf("\n Отсортированных англ слов =  и т д \n ");
-					printf("\n ~~~ Отсортированных англ слов =  и т д \n ");
-					printf("\n ~~~ Всего в тексте англ слов =  и т д \n ");
-					printf("\n ~~~ Уже изученных из них англ слов =  и т д \n ");
-
-				}//   end  Частотная сортировка - настройки урока
-
+				
 			}	// end вызов ДРУГОЙ сортировки - настройки урока
 
-//=========================================================================================================
-		
-
 	}	// end " if ЕСЛИ ХОТИТЕ СДЕЛАТЬ ПО НОВОМУ УРОК"
+// end " if ЕСЛИ ХОТИТЕ СДЕЛАТЬ ПО НОВОМУ УРОК"
 
-// &&&&&&&&&&&&&&  continue if else " if ЕСЛИ ХОТИТЕ СДЕЛАТЬ УРОК ПО НОВОМУ" &&&&&&&&&&&
-	else// 1b) Продолжаем старый ур т е извлекаем стар базу слов и старые настр. fini.dat
+//=============================================================================================
+
+// &&&&&&&&&&&&  else   continue  " ОСТАВИТЬ ОТКРЫВАВШИЙСЯ УРОК КАК ЕСТЬ" &&&&&&&&&&&
+	else// 1b) ПРОДОЛЖАЕМ СТАРЫЙ УР т е извлекаем стар базу слов и старые настр. fini.dat
 	{  // 1b) извлекаем настр. стар fini.dat и работаем с уже ранее открывавшимся уроком и 
-		// ранее первично (алфавитно) отсортированным текстом
+		// ранее первично указанно тип сорт в pmemini->sorttype  
 		puts("\n извлекаем настройки старого fini.dat_____ \n");
 		puts(" работаем с отсортированным ранее текстом_____ \n");
 	} //end else "Продолжаем старый ур "
 	  //end if else "оставить урок КАК ЕСТЬ ИЛИ СДЕЛАТЬ ПО НОВОМУ"
 
-	free(pmemini);
-	free(pmemsortword);
-	printf("\n\n             The END!   -     конец урока! \n\n\n");
+	free(pmemini); free(pmemsortword); printf("\n\n  The END!   -     конец урока! \n\n\n");
 	system("pause");
  }  //end main
