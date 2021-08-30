@@ -628,3 +628,6 @@ int main(int argc, const char ** argv, const char** env)
 	free(pmemini); free(pmemsortword); printf("\n\n  The END!   -     конец урока! \n\n\n");
 	system("pause");
  }  //end main
+
+ //  синхронизация ??????????
+
