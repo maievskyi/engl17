@@ -280,25 +280,6 @@ int main(int argc, const char ** argv, const char** env)
 
 				writehdd(0, pFini, "fini.dat", sizeof(struct inidat), 1, pmemini);
 
-////////..............................................................................
-//////				//~~~~~~~~~~  запись в ф ini "fini.dat" <- ИМЕНИ XXX_nosort.dat из дин памяти  ~~~~~~~~   	
-//////				err = fopen_s(&pFini, "fini.dat", "r+b");//XXX_nosrt.dat сохр в ф-л "fini.dat"
-//////				if (err)
-//////				{
-//////					puts("\n Ошибка! \n Неудача отытия ранее созданного ф-ла имён пользователя \n");
-//////					//удалить из д памяти pmemini->ininamenosortf <- ИМЕНИ - XXX_nosort.dat 
-//////					size_t tlen = strlen(pmemini->ininamenosortf);
-//////					memset(pmemini->ininamenosortf, NULL, tlen);
-//////					system("pause");
-//////					exit(1);
-//////				}
-//////				//"fini.dat" открылся - записываем имя XXX_nosort.dat  ==========
-//////				else
-//////				{
-//////					fwrite(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);//fini.dat
-//////					fclose(pFini);	//поработал и закрыл )) или ещё добавлять настойки???????? 
-//////				}
-////////................................................................................
 
 				// end 2) если разбить НОВЫЙ текст
 			}     //   end текстовый файл из папки открылся, отсепар-ся и запис-ся в pFnosort
