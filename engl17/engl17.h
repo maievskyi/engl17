@@ -56,6 +56,19 @@ char* writebase2(FILE *phddfile, char * namefilehdd, struct word *pmemword, int 
 	//countnumword - число несорт структур; возврат указ имя файла структур - namefilehdd;
 	//ф-я сама ОТКРЫВАЕТ ФАЙЛ r+ и потом закрывает файл на hdd 
 
+char* writehdd(int newf, FILE *phddfile, char* pfname, int elemsize, int elementcount, void *psourse);
+//// ф-я сама открывает r+b (newf=0) w+b (=1) записывает на hdd и потом закрывает файл 
+// newf - флаг зап в существ файл = 0																							  
+//phddfile указ на hdd файл в котором сохранять базу слов    ??("argv[1]_nosort.dat")?
+//pfname -  уже сформированное ранее ИМЯ ф-ла для hdd 
+// elemsize - размер элемента
+// elementcount - число элементов
+// psourse - указ на дин пам из которой писать,
+// phddfile -  указ на HDD файл 
+// возврат имя файла
+
+
+
 struct word * alphabet3(struct word *aa, int *psize);//
 	// возврат указатель на память с отсортир по алфав массивом структ, 
 	// aa дин память с маc структур,  psize количество структур 

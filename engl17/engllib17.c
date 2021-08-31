@@ -277,53 +277,118 @@ struct word *extensmem2(struct word *pmemarray, int *psizearray, int *pcountword
  //    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   END extensmem2()   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
  /////////////////// ======== запись в файл(заранее переименов) базу  структур   ==========///////////  
-char* writebase2(FILE *phddfile, char* pinidat, struct word *pmemword, int countnumword)//
+char* writebase2(FILE *phddfile, char* pfname, struct word *pmemword, int countnumword)//
 					//phddfile указ на hdd файл в котором сохранять базу слов    ??("argv[1]_nosort.dat")?
-					//pinidat -  уже сформированное ранее ИМЯ ф-ла для hdd
+					//pfname -  уже сформированное ранее ИМЯ ф-ла для hdd
 					// pmemword - указ на дин массив несорт структур, 
 					//countnumword - число стр динмассива
 					//, возврат указ имя файла с  структурами ( ----- )
 					//ф-я сама открывает r+и и потом закрывает файл на hdd 
 {
-	printf("   ~~~ Запись в файл %s несортированного массива структур по адресу: ~~~  \n", pinidat);
+	printf("   ~~~ Запись в файл %s несортированного массива структур по адресу: ~~~  \n", pfname);
 	//puts(argv[0]);  // записывает в стандартный поток вывода stdout строку     //temp
 	//printf("~~ argv[0] является собственное имя исп ф-ла: ( %s )~~\n", argv[0]);  // temp
 
-	// ~~~~~~~~~~ открытие указателя на hdd файл базы слов с именем pinidat  ~~~~~~~
+	// ~~~~~~~~~~ открытие указателя на hdd файл базы слов с именем pfname  ~~~~~~~
 	errno_t err = 1;   // зачем 1 -  ?????????????????????????????????? отлака наверно
 					   //FILE *hddfile = phddfile;					// указ на файл в котором сохранять базу слов-("argv[1]_nosort.dat")?
 	if (flagtext)		//если нов текст то открывается новый файл базы на запись
 	{
-		err = fopen_s(&phddfile, pinidat, "w+b");
+		err = fopen_s(&phddfile, pfname, "w+b");
 		if (err) {
-			perror(pinidat);
-			printf("   ~~~ Не открылся нов файл w+b %s  массива структур  ~~~  \n", pinidat);
+			perror(pfname);
+			printf("   ~~~ Не открылся  файл r+b %s  массива структур  ~~~  \n", pfname);
 			system("pause"); exit(1);
 	 	}
-		else printf("   ~~~ Записан новв файл %s  массива структур  ~~~  \n", pinidat);
+		else printf("   ~~~ Записан новв файл %s  ??? массива??? структур  ~~~  \n", pfname);
 	}
 	else
 	{
-		err = fopen_s(&phddfile, pinidat, "r+b");	// открыть бинарн файл для чт и дозаписи 
+		err = fopen_s(&phddfile, pfname, "r+b");	// открыть бинарн файл для чт и дозаписи 
 		if (err) {
-			perror(pinidat);
-			printf("   ~~~ Не открылся старый файл r+b %s  массива структур  ~~~  \n", pinidat);
+			perror(pfname);
+			printf("   ~~~ Не открылся старый файл r+b %s  массива структур  ~~~  \n", pfname);
 			system("pause"); exit(1);
 		}
-		else printf("   ~~~ Открыт старый файл %s  массива структур  ~~~  \n", pinidat);
+		else printf("   ~~~ Открыт старый файл %s  массива структур  ~~~  \n", pfname);
 	};
 
 
 
-	fwrite(pmemword, sizeof(struct word), countnumword, phddfile);  // запись в файл hddfile = "*pinidat"
+	fwrite(pmemword, sizeof(struct word), countnumword, phddfile);  // запись в файл hddfile = "*pfname"
 
 						   //fclose(pFtxt);	// из которого читается список слов
 	fclose(phddfile);		// закр файл в котором сохранять базу слов
-	printf("~~ Записан файл базы слов с пом-ю writebase2(): ( %s ) ~~\n", pinidat);  // temp
+	printf("~~ Записан файл базы слов с пом-ю writebase2(): ( %s ) ~~\n", pfname);  // temp
 	//...............................................................
 	//free(pnamewordnosort);	//осв-ие памяти с ИМЕНЕМ файла *_common.dat отсепарир-ных неотсортиров-х структ
-	return(pinidat);
+	return(pfname);
+}
+//    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   END writebase2()   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ /////////////////// ======== запись в файл(заранее переименов) данных из указ-лю  ====///////////  
+char* writehdd(int newf, FILE *phddfile, char* pfname, int elemsize, int elementcount, void *psourse)
+//// ф-я сама открывает r+b (newf=0) w+b (=1) записывает на hdd и потом закрывает файл 
+// newf - флаг зап в существ файл = 0																							  
+//phddfile указ на hdd файл в котором сохранять базу слов    ??("argv[1]_nosort.dat")?
+//pfname -  уже сформированное ранее ИМЯ ф-ла для hdd 
+// elemsize - размер элемента
+// elementcount - число элементов
+// psourse - указ на дин пам из которой писать,
+// phddfile -  указ на HDD файл 
+// возврат имя файла
+{
+	printf("   ~~~ Запись в файл %s  ~~~  \n", pfname);
+	//puts(argv[0]);  // записывает в стандартный поток вывода stdout строку     //temp
+	//printf("~~ argv[0] является собственное имя исп ф-ла: ( %s )~~\n", argv[0]);  // temp
+
+	// ~~~~~~~~~~ открытие указателя на hdd файл базы слов с именем pfname  ~~~~~~~
+	errno_t err = 1;   // зачем 1 -  ?????????????????????????????????? отлака наверно
+	//FILE *hddfile = phddfile;	// указ на файл в котором сохранять базу слов-
+	if (newf)		//если нов текст то открывается новый файл базы на запись
+	{
+		err = fopen_s(&phddfile, pfname, "w+b");
+		if (err) 
+		{
+			perror(pfname);
+			printf("   ~~~ Не открылся  файл (w+b) - %s   ~~~  \n", pfname);
+			system("pause"); exit(1);
+		}
+		else
+		{
+			printf("   ~~~ Создан новый файл %s  ~~~  \n", pfname);
+
+
+		}
+	}
+	else // старый файл
+	{
+		err = fopen_s(&phddfile, pfname, "r+b");	// открыть бинарн файл для чт и дозаписи 
+		if (err) {
+			perror(pfname);
+			printf("   ~~~ Не открылся старый файл r+b %s  массива структур  ~~~  \n", pfname);
+			system("pause"); exit(1);
+		}
+		else
+		{
+			printf("   ~~~ Открыт для записи старый файл %s   ~~~  \n", pfname);
+
+
+		}
+	};
+
+	fwrite(psourse, elemsize, elementcount , phddfile);  // запись в файл hddfile = "*pfname"
+
+	//fclose(pFtxt);	// из которого читается список слов
+	fclose(phddfile);		// закр файл в котором сохранять базу слов
+	printf("~~ Записан файл  ( %s ) ~~\n", pfname);  // temp
+	//................................
+	return(pfname);
 }//    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   END writebase2()   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+ //    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   END writehdd()   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
  ///////////////////////===========  Алфавитная сортировка 3  =============////////////////////////////
