@@ -31,9 +31,9 @@ FILE *pFsort;	//---> указатель на структ. ф в котором 
 FILE *pFfreqsort;//---> указ на  ф в котор сохр частотно-сорт базу слов - argv[1]_freqsort.dat"
 
 char *pnamenosort = NULL;		//-->указат на имя ф-ла с запис несорт масс стр 
-struct word *pmemword = NULL;		//-->глоб указат в main()на первичное выделеие ДИН памяти 
-							//под МАССИВ СТРУКТУР (word) для отсепарирования token()
-							//далее память будет перерасширятся по этому указателю
+struct word *pmemword = NULL;	//-->глоб указатна первичное выделеие несорт ДИН памяти 
+					//под МАССИВ СТРУКТУР (word) для отсепарирования token()
+					//далее память будет перерасширятся по этому указателю
 struct word *pmemsortword = NULL;  //--> указ на д пам стрктур с отсортированными словами
 struct word *pmemalphabetword = NULL;  //--> указ на д пам стр-р с отсорт-ми и сокращенными словами
 int amountword = 0;		//---> РАЗМ дин пам В ЗАПИСЯХ  под структуры word
@@ -166,9 +166,9 @@ int main(int argc, const char ** argv, const char** env)
 	{
 		// 2) если открыть новый текст ? - тогда нажм 'y' откр-тие нового входн ф text00.txt 
 
-//============================================================================================
+//=====######======######=========#########=======######=================================
 
-			//	2a)  ================================================
+//_ 	2a)  ================================================
 		puts("\n 2) если открыть и сортировать НОВЫЙ текст ? - тогда нажмите 'y'\n");
 		if ('y' == _getch(stdin))
 			//  открытие нового входного text00.txt файла  ==============
@@ -183,8 +183,8 @@ int main(int argc, const char ** argv, const char** env)
 				system("pause"); 
 				exit(1);
 			}
-			// &&&&&& else continue текстовый файл из папки открылся начин сепарироват  &&&&&&&
-			else {  // "новый" текстовый файл из папки открылся  
+			// &&&&&& else continue текст ф из папки нашёлся-открылся начин сепарироват  &&&&&&&
+			else {  // "новый" текстовый файл из папки нашёлся-открылся 
 				puts("открывается указ-ль FILE *pFtxt ф потока на text00.txt \n");
 				//// перенос ф-ла текста в оперативную динам память, для цього ---> ======================
 				
@@ -218,7 +218,7 @@ int main(int argc, const char ** argv, const char** env)
 					exit(3);
 				}
 				fclose(pFtxt);	//поработал и закрыл )) файл ввод  входного текста
-				pmemtxtbuf[txtSize] = '\0';  //!!!!!!!!!!!!!!!!!!!!!!!!!!! иначе в конце крякозябы
+				pmemtxtbuf[txtSize] = '\0';  //!!!!!!!!!!!!!!!!!!!!!! ИНАЧЕ В КОНЦЕ КРЯКОЗЯБЫ
 
 #ifdef TEXT0//~~~ неразб ткст выв-ся в станд. поток консоли НА ЭКРАН (для  отладки)============
 				if (puts(pmemtxtbuf) == EOF) {
@@ -231,7 +231,7 @@ int main(int argc, const char ** argv, const char** env)
 				}
 #endif//~~~~~~~~~~~~~~ TEXT НА ЭКРАН после отл можнои убрать  ~~~~~~~~~~~~~~~
 
-				//~~~~ Начальное самое первое выдел пам *pmemword под сепар и поехали! прост блок ==============
+				//2a-a) Начальн самое первое выдел пам *pmemword под и поехали СЕПАР! прост блок ~~~~~
 				{
 					printf("  Размер памяти под одну структуру %d байт\n", sizeof(struct word));
 					amountword = MAX_WORD;  //размер ЗАПИСЕЙ начально выделенн 
@@ -243,61 +243,44 @@ int main(int argc, const char ** argv, const char** env)
   и ПОЕХАЛИ! СЕПАРИРОВАТЬ\n",
 						MAX_WORD * sizeof(struct word), MAX_WORD);				//    отладка
 				}
-
-				//~~~~~~~~~    далее (подготовка аргументов?) ВЫЗОВ ф-ции сепарров - sepmini() ------   
-
-				// pmemword - указ на МАССИВ СТРУКТУР (word) для отсепарирования token()
-				//pmemtxtbuf - указ на дин массив неразбитого текста - копии входн файла
-				// ВЫЗОВ СЕПАРИРОВАНИЯ  long amountword = *pcountnumword / sizeof(struct word); 
-				//pmemword = sepmini(pmemword, pamountword, pmemtxtbuf, pcountnumword, TEXTIN);
-				// sepmini2(struct word *pmemarray, int *pamountword, pcountnumword, char *pmemtxtbuf);
 				pmemword = sepmini2(pmemword, pamountword, pcountnumword, pmemtxtbuf);
 				free(pmemtxtbuf);	//освободить пам буфер входн текста
 
 				//======  переименование и запись в файл базу XX_nosort сепар-х но несорт-х структ ===========				
 				
-				//---~~~~~~ для несортировнного массива преобразов имени XXX_nosort.dat вызовом ф-и rename2()
+				// 2a-b~~ для несортировнного массива преобразов имени XXX_nosort.dat вызовом ф-и rename2()
 				char *pnamewordnosort;  //указ д строки для преобраз.rename имя ф "TEXTIN_nosort.dat"
-				{	pnamewordnosort = rename2(TEXTIN, "_nosort.dat", 4);
-				}
-				//~~~~~~~~~~~~ запись в WORD hdd файл(заранее переим) базу несортир структур ---///////////////  
+				pnamewordnosort = rename2(TEXTIN, "_nosort.dat", 4);
+ 
+				//2a-c~~~~ базу несортир слов запись в WORD hdd файл(заранее переим)--///////////////  
+				
 				//writebase2(pFnosort, pnamewordnosort, pmemword, countnumword);
-					//pnosortFile - указ на откр внутр ф-ции hdd файл в котором сохранять базу слов 
-					//pnamewordnosort - уже сформированное ранее имя ф-ла для hdd ("argv[1]_nosort.dat")
-					// pmemword - указ на дин массив НЕСОРТ структур, 
-					// countnumword - число несорт структур
-					//,?? возврат указ имя файла с  структурами ( ----- )???? 
 				writehdd(1, pFnosort, pnamewordnosort, sizeof(struct word), countnumword, pmemword);
-
 				puts(pnamewordnosort);		//debug вывод имени .hdd несортированных слов
 
-				//===== изменение и занесение в ф ini "fini.dat" <- ИМЕНИ - XXX_nosort.dat из д п  ====   	
+				//2a-d== изменение и занесение в ф ini "fini.dat" <- ИМЕНИ - XXX_nosort.dat из д п  ====   	
 				
-				//~~~~~~~  сначала изменение в дин пам pFini <- ИМЕНИ - XXX_nosort.dat ~~~~~~~~~
+				//~~~~  Новая запись в поле дин пам pFini <- ИМЕНИ - XXX_nosort.dat ~~~~~~~~~
 				{pmemini->idname = 0;  // ?????
 				strncpy(pmemini->ininamenosortf, pnamewordnosort, EN1);
 				}
-
+				// запись  ф INI (имени "XXX_nosort.dat")
 				writehdd(0, pFini, "fini.dat", sizeof(struct inidat), 1, pmemini);
-
 
 				// end 2) если разбить НОВЫЙ текст
 			}     //   end текстовый файл из папки открылся, отсепар-ся и запис-ся в pFnosort
 
 // имеем  НОВЫЙ БАЗОВЫЙ ФАЙЛ сепарированный без сортировки 
 
-// создаём БАЗОВЫЙ ФАЙЛ разбитого с АЛФАВИТНОЙ СОРТИРОРВКОЙ
+// создаём НОВЫЙ БАЗОВЫЙ ФАЙЛ разбитого с АЛФАВИТНОЙ СОРТИРОРВКОЙ
 
-// здесь надо пробовать вставлять базовую алфавитную сортирорвку и далее "танцевать" от неё
-			// т е это будет БАЗОВЫЙ ФАЙЛ разбитого с АЛФАВИТНОЙ СОРТИРОРВКОЙ
-			//____________________________________ ______________________ _________________
-			// Выделение д памяти pmemsortword ПОД СОРТИРОВАННЫЙ МАССИВ [pcountnumword]  ===========
+			//2a-e т е это будет БАЗОВЫЙ ФАЙЛ разбитого с АЛФАВИТНОЙ СОРТИРОРВКОЙ
+			// Выделение д памяти pmemsortword ПОД СОРТИРОВАННЫЙ МАССИВ [pcountnumword] =====
 			pmemsortword = (struct word *) malloc((*pcountnumword) * sizeof(struct word));
 			//pmemsortword-глоб указ = выделение д пам стрктур под сортировку слов
 			if (pmemsortword == NULL)printf("Не выделенна память под pmemsortword \n");
 			else printf("  Выделенна память psort = %d Bytes \n  под %d сортированных структур \
-  и поехали! сортировать\n",
-				(*pcountnumword) * sizeof(struct word), (*pcountnumword));
+  и поехали! сортировать\n",(*pcountnumword) * sizeof(struct word), (*pcountnumword));
 
 			//=== pmemsortword <- pmemword Перенос в эту д память  структур ============
 			int temp = 0;
@@ -310,10 +293,8 @@ int main(int argc, const char ** argv, const char** env)
 			}
 			// надов конце блока free(pmemword);  // освободить д память pmemword
 			printf("Структуры скопированы в нов массb для ???-ной сортировки --> \n");
-/////// 
-			
-//// сдесь сделать надо выбор типа сортировки (из ini  )  ??? не надо-пусть алфавитн
 
+			// 2a-f)  БАЗОВАЯ алфавитн сортировка
 			int(*pfTemp) = measurealph; //указ на функц алфавитн сортировки
 			int disloc = 0;  //            далее Сортировка id по разным критериям
 			pmemsortword = idsort(pmemsortword, pcountnumword, pfTemp, disloc);
@@ -325,35 +306,47 @@ int main(int argc, const char ** argv, const char** env)
 			pnamesortword = rename2(TEXTIN, "_alphsort.dat", 4);  // д п выдел ф rename2()
 			puts(pnamesortword);
 
-			//~~~~~~~  запись в ф ini "fini.dat" <- ИМЕНИ XXX_alphsort.dat из дин памяти ====   	
-			err = fopen_s(&pFini, "fini.dat", "r+b");//XXX_alphsort.dat сохр в ф-л "fini.dat"
-			if (err)
-			{
-				puts("\n Ошибка! \n Неудача отытия ранее созданного ф-ла имён пользователя \n");
-				//удалить из д памяти pmemini->ininamenosortf <- ИМЕНИ - XXX_alphsort.dat 
-				size_t tlen = strlen(pmemini->ininamealphsortf);
-				memset(pmemini->ininamealphsortf, NULL, tlen);
-				system("pause");
-				exit(1);
-			}
-			else //производим изменение в д пам pmeminiи изменение в fini.dat и  в fini.dat
-			{
-				//~~~  производим изменение в д пам pmemini <- ИМЕНИ - XXX_alphsort.dat ~~~~~
-				{pmemini->idname = 0;   //?????
-				strncpy(pmemini->ininamealphsortf, pnamesortword, EN1);//зап поля в дин пам 
-				}  //~~~~  а затем и изменение в fini.dat  ~~~~~~~~~~~~~~~~
-				fwrite(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);//измен в fini.dat
-				fclose(pFini);	//поработал и закрыл )) или ещё добавлять настройки???????? 
-			}
+			////////// Далее запись в ф "text00_alphsort.dat" БАЗУ СЛОВ pmemsortword по алфавиту
+			////////writebase2(pFsort, pnamesortword, pmemsortword, countnumword);
+
+			//2a-g)~~~ запись в нов hdd файл(заранее переим) WORD базу алф-сортир структур ---
+			writehdd(1, pFnosort, pnamesortword, sizeof(struct word), countnumword, pmemsortword);
+		
+			//2a-h) запись старый ф INI (имени "XXX_alphsort.dat")
+			strncpy(pmemini->ininamealphsortf, pnamesortword, EN1);//зап поля в дин пам INI
+			writehdd(0, pFini, "fini.dat", sizeof(struct inidat), 1, pmemini);
+
+			//////err = fopen_s(&pFini, "fini.dat", "r+b");//XXX_alphsort.dat сохр в ф-л "fini.dat"
+			//////if (err)
+			//////{
+			//////	puts("\n Ошибка! \n Неудача отытия ранее созданного ф-ла имён пользователя \n");
+			//////	//удалить из д памяти pmemini->ininamenosortf <- ИМЕНИ - XXX_alphsort.dat 
+			//////	size_t tlen = strlen(pmemini->ininamealphsortf);
+			//////	memset(pmemini->ininamealphsortf, NULL, tlen);
+			//////	system("pause");
+			//////	exit(1);
+			//////}
+			//////else //производим изменение в д пам pmeminiи изменение в fini.dat и  в fini.dat
+			//////{
+			//////	//~~~  производим изменение в д пам pmemini <- ИМЕНИ - XXX_alphsort.dat ~~~~~
+			//////	{pmemini->idname = 0;   //?????
+			//////	strncpy(pmemini->ininamealphsortf, pnamesortword, EN1);//зап поля в дин пам 
+			//////	}  //~~~~  а затем и изменение в fini.dat  ~~~~~~~~~~~~~~~~
+			//////	fwrite(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);//измен в fini.dat
+			//////	fclose(pFini);	//поработал и закрыл )) или ещё добавлять настройки???????? 
+			//////}
+
+			//   передвинуть вверх ????????????????????????????????????????????????????
+
 //// Далее запись в ф "text00_alphsort.dat" БАЗУ СЛОВ pmemsortword по алфавиту
-//~~~~~~~~~~~~ запись в WORD hdd файл(заранее переим) базу алф-сортир структур ---////////////  
-			writebase2(pFsort, pnamesortword, pmemsortword, countnumword);
-			//pnosortFile - указ на откр внутр ф-ции hdd файл в котором сохранять базу слов 
-			//pnamesortword - уже сформированное ранее имя ф-ла для hdd ("argv[1]_alphsort.dat")
-			// pmemword - указ на дин массив НЕСОРТ структур, 
-			// countnumword - число структур
-			//,?? возврат указ имя файла с  структурами ( ----- )???? 
-			//.................................................................................
+//////////~~~~~~~~~~~~ запись в WORD hdd файл(заранее переим) базу алф-сортир структур ---////////////  
+////////			writebase2(pFsort, pnamesortword, pmemsortword, countnumword);
+////////			//pnosortFile - указ на откр внутр ф-ции hdd файл в котором сохранять базу слов 
+////////			//pnamesortword - уже сформированное ранее имя ф-ла для hdd ("argv[1]_alphsort.dat")
+////////			// pmemword - указ на дин массив НЕСОРТ структур, 
+////////			// countnumword - число структур
+////////			//,?? возврат указ имя файла с  структурами ( ----- )???? 
+////////			//.................................................................................
 
 			//,,,,,,,,,, Temp отладка print ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 			printf("This \"Print\" create alphabetwordbase inside to engl17.c after idsort() reduct3() - \n");
@@ -372,7 +365,7 @@ int main(int argc, const char ** argv, const char** env)
 
 //________________________________________________________________________________________
 
-		//___	2b) continue &&&& ЕСЛИ СЧИТЫВАТЬ И РАБ С СТАРЫМ ТXT ФАЙОМ  &&&&&
+//_  2b) continue &&&& ЕСЛИ СЧИТЫВАТЬ И РАБ С СТАРЫМ ТXT ФАЙОМ  &&&&&
 		else	//	2b) ~~~ ЕСЛИ ОТКРЫВАТЬ НЕ НОВ ТЕКСТ ФАЙЛ А ОТКРЫТЬ СТАРЫЙ ~~~~
 		{
 			// открыть ф ini и считать из него ИМЯ уже ранее алф-сортированной базы ??????
@@ -490,7 +483,7 @@ int main(int argc, const char ** argv, const char** env)
 		}  // end 2b) else ЕСЛИ СЧИТЫВАТЬ И РАБ С СТАРЫМ ТXT ФАЙЛОМ  
 // Конец выбора стар или нов txt. Массив слов нужной сорт-ки находится в д п pmemsortword ____
 
-//=============================================================================================
+//=====|||||=====||||||=====||||||======||||||=======|||||||===============================
 
 // здесь if( наж Y если изменить ТОЛЬКО НАСТРОЙКИ для изучения открытого текста)
 		puts("\n 3) если ТОЛЬКО НОВЫЕ НАСТРОЙКИ ?  - тогда нажмите 'y'\n");
