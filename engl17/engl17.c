@@ -315,39 +315,7 @@ int main(int argc, const char ** argv, const char** env)
 			//2a-h) запись старый ф INI (имени "XXX_alphsort.dat")
 			strncpy(pmemini->ininamealphsortf, pnamesortword, EN1);//зап поля в дин пам INI
 			writehdd(0, pFini, "fini.dat", sizeof(struct inidat), 1, pmemini);
-
-			//////err = fopen_s(&pFini, "fini.dat", "r+b");//XXX_alphsort.dat сохр в ф-л "fini.dat"
-			//////if (err)
-			//////{
-			//////	puts("\n Ошибка! \n Неудача отытия ранее созданного ф-ла имён пользователя \n");
-			//////	//удалить из д памяти pmemini->ininamenosortf <- ИМЕНИ - XXX_alphsort.dat 
-			//////	size_t tlen = strlen(pmemini->ininamealphsortf);
-			//////	memset(pmemini->ininamealphsortf, NULL, tlen);
-			//////	system("pause");
-			//////	exit(1);
-			//////}
-			//////else //производим изменение в д пам pmeminiи изменение в fini.dat и  в fini.dat
-			//////{
-			//////	//~~~  производим изменение в д пам pmemini <- ИМЕНИ - XXX_alphsort.dat ~~~~~
-			//////	{pmemini->idname = 0;   //?????
-			//////	strncpy(pmemini->ininamealphsortf, pnamesortword, EN1);//зап поля в дин пам 
-			//////	}  //~~~~  а затем и изменение в fini.dat  ~~~~~~~~~~~~~~~~
-			//////	fwrite(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);//измен в fini.dat
-			//////	fclose(pFini);	//поработал и закрыл )) или ещё добавлять настройки???????? 
-			//////}
-
-			//   передвинуть вверх ????????????????????????????????????????????????????
-
-//// Далее запись в ф "text00_alphsort.dat" БАЗУ СЛОВ pmemsortword по алфавиту
-//////////~~~~~~~~~~~~ запись в WORD hdd файл(заранее переим) базу алф-сортир структур ---////////////  
-////////			writebase2(pFsort, pnamesortword, pmemsortword, countnumword);
-////////			//pnosortFile - указ на откр внутр ф-ции hdd файл в котором сохранять базу слов 
-////////			//pnamesortword - уже сформированное ранее имя ф-ла для hdd ("argv[1]_alphsort.dat")
-////////			// pmemword - указ на дин массив НЕСОРТ структур, 
-////////			// countnumword - число структур
-////////			//,?? возврат указ имя файла с  структурами ( ----- )???? 
-////////			//.................................................................................
-
+			
 			//,,,,,,,,,, Temp отладка print ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 			printf("This \"Print\" create alphabetwordbase inside to engl17.c after idsort() reduct3() - \n");
 			int m;    // Temp отладка
@@ -366,6 +334,9 @@ int main(int argc, const char ** argv, const char** env)
 //________________________________________________________________________________________
 
 //_  2b) continue &&&& ЕСЛИ СЧИТЫВАТЬ И РАБ С СТАРЫМ ТXT ФАЙОМ  &&&&&
+
+//из INI узнать 
+
 		else	//	2b) ~~~ ЕСЛИ ОТКРЫВАТЬ НЕ НОВ ТЕКСТ ФАЙЛ А ОТКРЫТЬ СТАРЫЙ ~~~~
 		{
 			// открыть ф ini и считать из него ИМЯ уже ранее алф-сортированной базы ??????
@@ -384,10 +355,9 @@ int main(int argc, const char ** argv, const char** env)
 			else  // &&&&&&&&&&&&&&&  РАБ С д пам из СТАРОГО ini Ф  &&&&&&&&&&&&
 			{
 				size_t result = fread(pmemini, sizeof(struct inidat), QUANTITYNAME, pFini);
-				// теперь имеем настройки из ini файла в дин памяти pmemini 
-			}
-			// в зависимости от типа сортировки считать алфав или частотн базу слов......
-			switch (pmemini->sorttype)
+				// теперь имеем переносены настройки из ini файла в дин память pmemini 
+				//из pmemini->sorttype видим какая была ранее выбрана сортировка
+				switch (pmemini->sorttype)
 			{
 			case 0:// считываем в д пам алф сорт файл
 				err = fopen_s(&pFsort, pmemini->ininamealphsortf, "r+b");//XXX_alphsort.dat сохр в ф-л "fini.dat"
@@ -472,14 +442,16 @@ int main(int argc, const char ** argv, const char** env)
 						exit(1);
 					}
 
-					size_t result = fread(pmemsortword, sizeof(byte), fileSize, pFsort);
+					size_t result = fread(pmemsortword, sizeof(byte), fileSize, pFsort);//????????????????????
 					// частотн сортиров-й массив слов считан повторн из ф в д п pmemsortword 
 					puts("\n Алфавитно сортированный файл считан повторно! \n  \n");
 				}// end	b) Считывание частотно сортированного файла
 
 				break;
 			}// нужной сортировки массив слов считан повторн из ф в д п pmemsortword
-						
+			}	// end else
+			// в зависимости от типа сортировки считать алфав или частотн базу слов......
+									
 		}  // end 2b) else ЕСЛИ СЧИТЫВАТЬ И РАБ С СТАРЫМ ТXT ФАЙЛОМ  
 // Конец выбора стар или нов txt. Массив слов нужной сорт-ки находится в д п pmemsortword ____
 
@@ -489,9 +461,9 @@ int main(int argc, const char ** argv, const char** env)
 		puts("\n 3) если ТОЛЬКО НОВЫЕ НАСТРОЙКИ ?  - тогда нажмите 'y'\n");
 		if ('y' == _getch(stdin))//  вносить изменения в настройки урока ============
 		{
-			// открыть разбитый и сорт текст из файла  ininamenosortf[EN1] -?????
+			// есть алф или друг сорт текст из txt файла  ininamenosortf[EN1] 
 			// ! он уже есть в pmemsortword ??????????????????????????????????????
-			// запросить нов наст и пересортировать базовый массив структур
+			//  настройки нах-ся в pmemini из ini ф надо запросить нов настр вручную
 			//РУЧНОЙ ВЫБОР СОРТИРОВКИ===============================================================
 			//далее вызов АЛФАВИТНОЙ или другой сортировки  =======
 			// созд указат на ф-ю сортировки
@@ -563,7 +535,7 @@ int main(int argc, const char ** argv, const char** env)
 				printf("\n ~~~ Уже изученных из них англ слов =  и т д \n ");
 
 			}//   end  Частотная сортировка - настройки урока
-		}	//end 3) если ТОЛЬКО НОВЫЕ НАСТРОЙКИ вносить в старую (уже существ-ую) базу слов  
+		}	//end 3) если вносить изменения в настройки урока старую (уже существ-ую) базу слов  
 
 /*
 //     ____________________________  БУДЕТ ПОВТОРЕНИЕ ???? _________________
@@ -589,10 +561,13 @@ int main(int argc, const char ** argv, const char** env)
 			}
 			printf("Структуры скопированы в нов массb для алфавитной сортировки --> \n");
 */
-			else  // else вызов ДРУГОЙ сортировки ????????????????????????
+			else  // else - нет, старые настройки сортировки ????????????????????????
 			{
 				
-			}	// end вызов ДРУГОЙ сортировки - настройки урока
+			}	// end - нет, старые настройки сортировки
+
+// далее - Сортировка по укаазанным в ini дин памяти настройкам
+
 
 	}	// end " if ЕСЛИ ХОТИТЕ СДЕЛАТЬ ПО НОВОМУ УРОК"
 // end " if ЕСЛИ ХОТИТЕ СДЕЛАТЬ ПО НОВОМУ УРОК"
