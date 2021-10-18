@@ -292,7 +292,10 @@ char* writebase2(FILE *phddfile, char* pfname, struct word *pmemword, int countn
 	// ~~~~~~~~~~ открытие указателя на hdd файл базы слов с именем pfname  ~~~~~~~
 	errno_t err = 1;   // зачем 1 -  ?????????????????????????????????? отлака наверно
 					   //FILE *hddfile = phddfile;					// указ на файл в котором сохранять базу слов-("argv[1]_nosort.dat")?
-	if (flagtext)		//если нов текст то открывается новый файл базы на запись
+					   
+					   //!!!! flagtext попробуем убрать и не использовать  !!!!
+	/*
+	if (flagtext)		//если нов текст то открывается новый файл базы на запись  ???????????????????????????????????????????????????????
 	{
 		err = fopen_s(&phddfile, pfname, "w+b");
 		if (err) {
@@ -312,7 +315,14 @@ char* writebase2(FILE *phddfile, char* pfname, struct word *pmemword, int countn
 		}
 		else printf("   ~~~ Открыт старый файл %s  массива структур  ~~~  \n", pfname);
 	};
-
+	*/
+	err = fopen_s(&phddfile, pfname, "r+b");	// открыть бинарн файл для чт и дозаписи 
+	if (err!=0) {
+		perror(pfname);
+		printf("   ~~~ Не открылся старый файл r+b %s  массива структур  ~~~  \n", pfname);
+		system("pause"); exit(1);
+	}
+	else printf("   ~~~ Открыт старый файл %s  массива структур  ~~~  \n", pfname);
 
 
 	fwrite(pmemword, sizeof(struct word), countnumword, phddfile);  // запись в файл hddfile = "*pfname"

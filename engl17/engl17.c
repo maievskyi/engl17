@@ -35,7 +35,7 @@ struct word *pmemword = NULL;	//-->глоб указатна первичное 
 					//под МАССИВ СТРУКТУР (word) для отсепарирования token()
 					//далее память будет перерасширятся по этому указателю
 struct word *pmemsortword = NULL;  //--> указ на д пам стрктур с отсортированными словами
-struct word *pmemalphabetword = NULL;  //--> указ на д пам стр-р с отсорт-ми и сокращенными словами
+//struct word *pmemalphabetword = NULL;  //не приг-сь ук на д пам с отсорт-ми и сокращенными словами
 int amountword = 0;		//---> РАЗМ дин пам В ЗАПИСЯХ  под структуры word
 int *pamountword = NULL;		//---> указ на РАЗМ дин пам В ЗАПИСЯХ  под структуры word
 int countnumword = 0;	//---счётчик инкремента слов а значит и стр-р при сепар-и
@@ -44,7 +44,7 @@ int countnosort = 0;	//---общее количество отсепариров
 struct inidat *pmemini = NULL;	//--->указ на ДИН пам с стр-й базы ini имён прог-мы
 int flagtext = NEWTEXT;	//переменная -ФЛАГ режима работы со стар или нов текстом
 						//т е будет ли сепарироваться по новой и писаться в нофую базу слов 
-
+						//!!!!  попробуем убрать и не использовать  !!!!
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%       main     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
 int main(int argc, const char ** argv, const char** env)
 {
@@ -72,25 +72,30 @@ int main(int argc, const char ** argv, const char** env)
 	else printf("  Выделена дин пам pmemini = %d Bytes \n\
  под ini структуру-настройки программы \n",sizeof(struct inidat));	// debug
 	
+	//присвоить имя динамической струтуре = struct inidat --- settings  ---
+	struct inidat settings = *pmemini;
+
 	
 	memset(pmemini, '\0', sizeof(struct inidat)); //  пока  заполн. нулями, ?
 
-	//	ТУТ  взамен 0 - СТАНДАРТНЫЕ настройки
+	//	ТУТ  взамен 0 - СТАНДАРТНЫЕ настройки (из шаблона)
 	pmemini->sorttype = 1; // по умолч алфав сортировка
+	strncpy(pmemini->name, "text00.txt", EN1); // имя  ф
 	strncpy(pmemini->ininamenosortf, "text00_nosort.dat",EN1); // имя несорт ф
 	strncpy(pmemini->ininamealphsortf, "text00_alphsort.dat", EN1); // имя алфав сорт ф
-	strncpy(pmemini->ininameafreqsortf, "text00_freqalphsort.dat", EN1); //имя част-алфав ф
+	//strncpy(pmemini->ininameafreqsortf, "text00_freqalphsort.dat", EN1); //имя част-алфав ф
+	strncpy(settings.ininameafreqsortf, "text00_freqalphsort.dat", EN1); //имя част-алфав ф
 
 	//и возможны !!!! дальнейшие настройки дополнительно к настр по умолчани
 							
-	//2) есть ли fini.dat  ==============================================================
+	//2) есть ли ф fini.dat  ==============================================================
 
 	//2) открытие=проверка сущ-вания стар ini файла пользов настр "fini.dat"=============		
 	err = fopen_s(&pFini, "fini.dat", "r+b");	 // открывается ли на ЧТЕНИЕ с дозаписью
 	if (err)	// НЕТ  СТАРОГО fini.dat "r+b" = нет. Делаем новый = "w+b"							
 	{			// (!!! только "r" в VS чтото не получилось)
 		perror("fini.dat");
-		puts("\n !!! ранее НЕ существовал ini файл пользователя \n нажать ENYKEY  \n");
+		puts("\n !!! НЕ найден ini файл пользователя \n чтобы созд его = нажать ENYKEY  \n");
 		system("pause");
 
 	//// открывается НОВЫЙ fini.dat "w+b" на ЗАПИСЬ-ЧТЕНИЕ
@@ -150,11 +155,35 @@ int main(int argc, const char ** argv, const char** env)
 	  
 	  //5) значит теперь у нас есть УЖЕ ПО ЛЮБОМУ созданный и закрытый fini.dat  _______________________________________
 	  
-	 // все настройки будут идти с  созданной и заполн из файла д памятью - pmemini
+	 // все настройки будут идти с структурой settings созданной и заполн из фай ла в 
+	//д память - pmemini
 	// (^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^)
 	// тут надо бы секунд на 5 вывести на экран имеющиеся стнд настройки pmemini
-	  puts("\n ^^^ показ 5 сек из Д ПАМ-pmemini ст. настройки польз-ля по умолчанию ..\n");
-	
+	  puts("\n - показ 5 сек структуру settings из pmemini н-ки ур.(по умолчанию ???)\n");
+
+	  printf(" ~~~ idname = %d \n", settings.idname);
+	  printf(" ~~~ sorttype = %d \n", settings.sorttype);
+	  printf(" ~~~ name[EN1] = %s \n", settings.name);
+	  printf(" ~~~ ininamenosortf[EN1] = %s \n", settings.ininamenosortf);
+	  printf(" ~~~ ininamealphsortf[EN1] = %s \n", settings.ininamealphsortf);
+	  printf(" ~~~ ininameafreqsortf[EN1] = %s \n", settings.ininameafreqsortf);
+	  puts("\n    --- показ счетчика слов:\n");
+	  printf(" ~~~ int inicountnumword = %d \n", settings.inicountnumword);
+	  //printf(" ~~~ idname = %d \n", settings.idname);
+
+
+
+
+	  printf(" ~~~ pmemini->sorttype = %d \n", pmemini->sorttype);
+	  // незаполнено name !!!!  
+	  printf("\n ~~~ pmemini->name[] = %s \n", pmemini->name);
+	  printf("\n ~~~ Отсортированных англ слов countnumword = %d и т д \n ", countnumword);
+	  printf("\n ~~~ Всего в тексте англ слов =  %d и т д \n ", countnosort);
+	  printf("\n ~~~ Уже изученных из них англ слов =  и т д \n ");
+
+	  Sleep(3000);  // задержка мс
+	  puts("\n ^^^ закончился показ 5 сек из Д ПАМ-pmemini настройки польз-ля  ..\n");
+
 	  //6)закрыть ф поток в который запис ini настройки СТАРЫЕ ИЛИ НОВЫЕ ПО УМОЛЧАНИЮ  
 	  fclose(pFini);	//end теперь УЖЕ есть ПО ЛЮБОМУ созданный и потом закрытый fini.dat 
 		
@@ -337,7 +366,7 @@ int main(int argc, const char ** argv, const char** env)
 
 //из INI узнать 
 
-		else	//	2b) ~~~ ЕСЛИ ОТКРЫВАТЬ НЕ НОВ ТЕКСТ ФАЙЛ А ОТКРЫТЬ СТАРЫЙ ~~~~
+		else	//	2b) ~~~ ЕСЛИ ОТКРЫВАТЬ НЕ НОВ ТЕКСТ ФАЙЛ А ПЕРЕОТКРЫТЬ СТАРЫЙ ~~~~
 		{
 			// открыть ф ini и считать из него ИМЯ уже ранее алф-сортированной базы ??????
 			// и считать из него тип сортировки
@@ -359,7 +388,7 @@ int main(int argc, const char ** argv, const char** env)
 				//из pmemini->sorttype видим какая была ранее выбрана сортировка
 				switch (pmemini->sorttype)
 			{
-			case 0:// считываем в д пам алф сорт файл
+			case 0:// 2b1) считываем в д пам АЛФ сорт файл
 				err = fopen_s(&pFsort, pmemini->ininamealphsortf, "r+b");//XXX_alphsort.dat сохр в ф-л "fini.dat"
 				if (err) //   a)
 				{
@@ -388,43 +417,20 @@ int main(int argc, const char ** argv, const char** env)
 					// алф сортиров-й массив слов считан повторн из ф в д п pmemsortword 
 					puts("\n Алфавитно сортированный файл считан повторно! \n  \n");
 				}
-				close(pFsort);
+				fclose(pFsort);
 			
 				break;
-			case 1: // считываем в д пам частотно сорт файл
+			case 1: // 2b2) считываем в д пам ЧАСТОТНО сорт файл
 				err = fopen_s(&pFfreqsort, pmemini->ininameafreqsortf, "r+b");//XXX_freqsort.dat 
 				if (err) //   a)	Неудача отытия ранее созданного XXX_freqsort.dat
 				{
 					puts("\n Ошибка! \n Неудача отытия ранее созданного ф-ла частотно-сортированных слов \n");
 					system("pause");
 					exit(1);
-					//////
-					//////err = fopen_s(&pFsort, pmemini->ininamealphsortf, "r+b");//XXX_alphsort.dat сохр в ф-л "fini.dat"
-					//////if (err) //   a)
-					//////{
-					//////	puts("\n Ошибка! \n Неудача отытия не только ранее частотн сорт ф \
-     ////// но и ранее созданного ф-ла АЛФАВИТНО-сортированных слов \n");
-					//////	system("pause");
-					//////	exit(1);
-					//////}
-					//////else 
-					//////{
-					//////	err = fopen_s(&pFfreqsort, pmemini->ininameafreqsortf, "w+b");//XXX_freqsort.dat
-					//////	if (err) //  
-					//////	{
-					//////		puts("\n Ошибка! \n Неудача создания w+b СОВЕРШЕННО нов ф-ла частотн-сорт слов \n");
-					//////		system("pause");
-					//////		exit(1);
-					//////	}
-					//////	else // == == создан, будет отсортирован из алф сорт и записан ф част сорт
-					//////	{
-					//////	}					
-					//////}
 					
-					//---------------------------------------------------------
-
+					
 				}
-				else   //	b) Успешн откр и Считывание существ ранее частот-сортир файла
+				else   //	 Успешн откр и Считывание существ ранее частот-сортир файла
 				{
 					//!!!! !!!! !!!! Считывание частотно сортированного файла !!!!
 					long fileSize = 0;	////~~~~~~~  определяем РАЗМЕР входн ***.txt файла в байтах  -----	 
@@ -432,8 +438,8 @@ int main(int argc, const char ** argv, const char** env)
 					fileSize = ftell(pFfreqsort); //в txtSize = ПОЛУЧАЕМ РАЗМЕР В БАЙТАХ
 					fseek(pFfreqsort, 0, SEEK_SET);	// перевести текущую поз на начало файла
 
-					printf("Размер д пам для алфав-сортированной базы из ф-ла = %d Bytes \n", fileSize);
-					//выделяем эту д память под алф-сорт
+					printf("Размер д пам для частотно-сортированной базы из ф-ла = %d Bytes \n", fileSize);
+					//выделяем эту д память под частот-сорт
 					pmemsortword = (byte*)malloc(fileSize);
 					if (pmemsortword == NULL)
 					{
@@ -442,13 +448,22 @@ int main(int argc, const char ** argv, const char** env)
 						exit(1);
 					}
 
-					size_t result = fread(pmemsortword, sizeof(byte), fileSize, pFsort);//????????????????????
+/*
+//switch (pmemini->sorttype)
+
+
+
+*/
+					size_t result = fread(pmemsortword, sizeof(byte), fileSize, pFfreqsort);//???????pFfreqsort 
 					// частотн сортиров-й массив слов считан повторн из ф в д п pmemsortword 
 					puts("\n Алфавитно сортированный файл считан повторно! \n  \n");
+					
 				}// end	b) Считывание частотно сортированного файла
-
+				 //возможно надо закрыть считанный файл по указателю pFfreqsort ???
+				fclose(pFfreqsort);
 				break;
 			}// нужной сортировки массив слов считан повторн из ф в д п pmemsortword
+				// теперь в pmemsortword находится массив структур нужной сортировки
 			}	// end else
 			// в зависимости от типа сортировки считать алфав или частотн базу слов......
 									
@@ -518,8 +533,7 @@ int main(int argc, const char ** argv, const char** env)
 				// Записать в файл XXX_freqsort.dat !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-
-				
+				//  flagtext ????????????????????
  				writebase2(pFfreqsort, pmemini->ininameafreqsortf, pmemsortword, countnumword);
 
 				printf("This \"Print\" inside настр урока engl17.c after measurerepeatalph() - \n");
@@ -578,14 +592,21 @@ int main(int argc, const char ** argv, const char** env)
 	else// 1b) ПРОДОЛЖАЕМ СТАРЫЙ УР т е извлекаем стар базу слов и старые настр. fini.dat
 	{  // 1b) извлекаем настр. стар fini.dat и работаем с уже ранее открывавшимся уроком и 
 		// ранее первично указанно тип сорт в pmemini->sorttype  
-		puts("\n извлекаем настройки старого fini.dat_____ \n");
-		printf(" pmemini->sorttype = %d \n", pmemini->sorttype);
-		printf("\n ~~~ Отсортированных англ слов countnumword = %d и т д \n ", countnumword);
-		printf("\n ~~~ Всего в тексте англ слов =  %d и т д \n ", countnosort);
-		printf("\n ~~~ Уже изученных из них англ слов =  и т д \n ");
+		puts("\n извлекаем настройки старого fini.dat_____ ");
 		puts(" работаем с отсортированным ранее текстом_____ \n");
+		
 	} //end else "Продолжаем старый ур "
 	  //end if else "оставить урок КАК ЕСТЬ ИЛИ СДЕЛАТЬ ПО НОВОМУ"
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	  printf(" ~~~ pmemini->sorttype = %d \n", pmemini->sorttype);
+	  // незаполнено name !!!!  
+	  printf("\n ~~~ pmemini->name[] = %s \n", pmemini->name);
+	  printf("\n ~~~ Отсортированных англ слов countnumword = %d и т д \n ", countnumword);
+	  printf("\n ~~~ Всего в тексте англ слов =  %d и т д \n ", countnosort);
+	  printf("\n ~~~ Уже изученных из них англ слов =  и т д \n ");
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
 
 	free(pmemini); free(pmemsortword); printf("\n\n  The END!   -     конец урока! \n\n\n");
 	system("pause");
