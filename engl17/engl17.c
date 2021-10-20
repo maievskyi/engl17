@@ -31,7 +31,10 @@ FILE *pFsort;	//---> указатель на структ. ф в котором 
 FILE *pFfreqsort;//---> указ на  ф в котор сохр частотно-сорт базу слов - argv[1]_freqsort.dat"
 
 char *pnamenosort = NULL;		//-->указат на имя ф-ла с запис несорт масс стр 
-struct inidat settings;
+
+//struct inidat settings;     // структура ОПЕРАТИВНОЙ памяти с пользавательскими настройками
+//struct inidat *psettings = &settings;	//каз на структ в ОПЕРАТИВНОЙ пам с пользават-ми настройками
+
 struct word *pmemword = NULL;	//-->глоб указатна первичное выделеие несорт ДИН памяти 
 					//под МАССИВ СТРУКТУР (word) для отсепарирования token()
 					//далее память будет перерасширятся по этому указателю
@@ -42,7 +45,7 @@ int *pamountword = NULL;		//---> указ на РАЗМ дин пам В ЗАП�
 int countnumword = 0;	//---счётчик инкремента слов а значит и стр-р при сепар-и
 int *pcountnumword = NULL;		//--->указатель на счетч слов
 int countnosort = 0;	//---общее количество отсепарированных несортированных слов в тексте
-struct inidat *pmemini = &settings;	//--->указ на ДИН пам с стр-й базы ini имён прог-мы
+struct inidat *pmemini ;	//--->указ на ДИН пам стр-ры базы ini имён прог-мы
 int flagtext = NEWTEXT;	//переменная -ФЛАГ режима работы со стар или нов текстом
 						//т е будет ли сепарироваться по новой и писаться в нофую базу слов 
 						//!!!!  попробуем убрать и не использовать  !!!!
@@ -68,7 +71,7 @@ int main(int argc, const char ** argv, const char** env)
 //// 6) закрыть ini файл , брать настройки из д п pmemini  =ini файлу
 
 	//1)созд д пам pmemini
-	pmemini = (struct inidat*)malloc(sizeof(struct inidat)); //созд д пам
+	pmemini = (struct inidat*)malloc(sizeof(struct inidat)); //созд ДИН пам под стркт
 	if (pmemini == NULL)printf("Не выделена память ini настройки программы \n");
 	else printf("  Выделена дин пам pmemini = %d Bytes \n\
  под ini структуру-настройки программы \n",sizeof(struct inidat));	// debug
@@ -85,7 +88,9 @@ int main(int argc, const char ** argv, const char** env)
 	strncpy(pmemini->ininamenosortf, "text00_nosort.dat",EN1); // имя несорт ф
 	strncpy(pmemini->ininamealphsortf, "text00_alphsort.dat", EN1); // имя алфав сорт ф
 	//strncpy(pmemini->ininameafreqsortf, "text00_freqalphsort.dat", EN1); //имя част-алфав ф
-	strncpy(settings.ininameafreqsortf, "text00_freqalphsort.dat", EN1); //имя част-алфав ф
+
+
+	strncpy(pmemini->ininameafreqsortf, "text00_freqalphsort.dat", EN1); //имя част-алфав ф
 
 	//и возможны !!!! дальнейшие настройки дополнительно к настр по умолчани
 							
@@ -162,23 +167,25 @@ int main(int argc, const char ** argv, const char** env)
 	// тут надо бы секунд на 5 вывести на экран имеющиеся стнд настройки pmemini
 	  puts("\n - показ 5 сек структуру settings из pmemini н-ки ур.(по умолчанию ???)\n");
  
-	  printf(" ~~~ settings.idname = %d \n", settings.idname);
-	  printf(" ~~~ settings.sorttype = %d \n", settings.sorttype);
-	  printf(" ~~~ settings.name[EN1] = %s \n", settings.name);
-	  printf(" ~~~ settings.ininamenosortf[EN1] = %s \n", settings.ininamenosortf);
-	  printf(" ~~~ settings.ininamealphsortf[EN1] = %s \n", settings.ininamealphsortf);
-	  printf(" ~~~ settings.ininameafreqsortf[EN1] = %s \n", settings.ininameafreqsortf);
-	  puts("    --- показания счетчика слов:");
-	  printf(" ~~~ settings.inicountnumword = %d \n", settings.inicountnumword);
-	  //printf(" ~~~ idname = %d \n", settings.idname);printf(" ~~~ idname = %d \n", settings.idname);
+	  printf(" ~~~ pmemini->idname = %d \n", pmemini->idname);
 	  printf(" ~~~ pmemini->sorttype = %d \n", pmemini->sorttype);
+	  printf(" ~~~ (*pmemini).sorttype = %d \n", (*pmemini).sorttype);
 	  printf(" ~~~ pmemini->name[EN1] = %s \n", pmemini->name);
 	  printf(" ~~~ pmemini->ininamenosortf[EN1] = %s \n", pmemini->ininamenosortf);
 	  printf(" ~~~ pmemini->ininamealphsortf[EN1] = %s \n", pmemini->ininamealphsortf);
 	  printf(" ~~~ pmemini->ininameafreqsortf[EN1] = %s \n", pmemini->ininameafreqsortf);
 	  puts("    --- показания счетчика слов:");
 	  printf(" ~~~ pmemini->inicountnumword = %d \n", pmemini->inicountnumword);
-
+	  //printf(" ~~~ idname = %d \n", settings.idname);printf(" ~~~ idname = %d \n", settings.idname);
+	  
+	  /*
+	  printf(" ~~~ pmemini->name[EN1] = %s \n", pmemini->name);
+	  printf(" ~~~ pmemini->ininamenosortf[EN1] = %s \n", pmemini->ininamenosortf);
+	  printf(" ~~~ pmemini->ininamealphsortf[EN1] = %s \n", pmemini->ininamealphsortf);
+	  printf(" ~~~ pmemini->ininameafreqsortf[EN1] = %s \n", pmemini->ininameafreqsortf);
+	  puts("    --- показания счетчика слов:");
+	  printf(" ~~~ pmemini->inicountnumword = %d \n", pmemini->inicountnumword);
+	  */
 
 	  puts("    ================================= \n");
 
