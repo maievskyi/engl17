@@ -135,7 +135,7 @@ struct word * sepmini2(struct word *pmemarray, int *psizearray, int *pcountwordl
 // pmemarray - ук на массив структур word, psizearray - указ на число структур в массиве
 // pcountwordlok - ук на счётчик слов pmemtxtbufpmemtxtbuf - ук на д память с входн текстом
 {
-	char seps[] = " ][()/,.\t\n\r\v\xA0\"\'\\?!-+*/<>=_:;0123456789#$%^&";	// строка сепараторов
+	char seps[] = " ][()/,.\t\n\r\v\xA0\"\'\`!-+*/<>=_:;0123456789#$%^&";	// строка сепараторов
 	int max_word = MAX_WORD;
 
 	char *token1 = NULL;
@@ -692,14 +692,6 @@ struct word * reduct4(struct word *pa, int *psize)
 
 
 	}
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
