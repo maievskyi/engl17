@@ -7,6 +7,7 @@
 
 
 
+
 #define _CRT_SECURE_NO_WARNINGS  //   ?? подробнее об предупреждениях ??
 //#define VARTOKEN nodebug
 //#define RENAME ok
@@ -606,7 +607,7 @@ int main(int argc, const char ** argv, const char** env)
 				//fclose(pFfreqsort);
 
 				
-				//#ifdef VISUAL_WORDS
+#ifdef VISUAL_WORDS
 				printf("This \"Print\" inside настроек урока after measurerepeatalph() - \n");
 				int m;
 				for (m = 0; m < *pcountnumword; m++)
@@ -614,7 +615,7 @@ int main(int argc, const char ** argv, const char** env)
 					//pmemsortword[m].repeat =  0;
 					printf(" _ %3d.  alphabet_id=%3d id=%3d  _( %s ) [repeat= %d ]   \n", m, pmemsortword[m].repeat_id, pmemsortword[m].id, pmemsortword[m].en, pmemsortword[m].repeat);    // temp
 				}
-//#endif // VISUAL_WORDS				
+#endif // VISUAL_WORDS				
 				psettings->sorttype = FREQ - '0';
 				printf("\n  КОНЕЦ частотной сортировки. \n ");
 				//printf("\n ~~~ Всего в тексте англ слов =  и т д \n ");
@@ -622,44 +623,13 @@ int main(int argc, const char ** argv, const char** env)
 
 			}//   end  Частотная сортировка - настройки урока
 			
-			//Запись в HDD типа сортировки
-			//err = fopen_s(&pFini, "fini.dat", "r+b");//XXX_alphsort.dat сохр в ф-л "fini.dat"
-			//if (err)
-			//{
-			//	puts("\n Ошибка! \n Неудача отытия ранее созданного ф-ла имён пользователя \n");
-			//	system("pause");
-			//	exit(1);
-			//}
 			writehdd(0, pFini, "fini.dat", sizeof(struct inidat), 1, psettings);
 			//fclose(pFini);
 
 
 		}	//end 3) если вносить изменения в настройки урока старую (уже существ-ую) базу слов  
 
-/*
-//     ____________________________  БУДЕТ ПОВТОРЕНИЕ ???? _________________
-// Перед сортировкой преобразование имени в XXX_sort.dat  =====================
-			char *pnamesortword = NULL;  // указат на дин строка-имя  файла "argv[1]_sort.dat"
-			pnamesortword = rename2(TEXTIN, "_sort.dat", 4);  // д п выдел ф rename2()
-			puts(pnamesortword); 		
-// Выделение д памяти pmemsortword под сортированный массив [pcountnumword]  ===========
-			pmemsortword = (struct word *) malloc((*pcountnumword) * sizeof(struct word));
-			//pmemsortword-глоб указ = выделение д пам стрктур под сортировку слов
-			if (pmemsortword == NULL)printf("Не выделенна память под pmemsortword \n");
-			else printf("  Выделенна память psort = %d Bytes \n  под %d сортированных структур \
-  и поехали! сортировать\n",
-				(*pcountnumword) * sizeof(struct word), (*pcountnumword));
-//Перенос в эту д память pmemsortword структур из pmemword  =============
-			int temp = 0;
-			for (temp = 0; temp < *pcountnumword; temp++)
-			{
-				*(pmemsortword + temp) = *(pmemword + temp); //копирование
-#ifdef NO_SORT 
-				printf("m_sort %d - %s \n", temp, pmemsortword[temp].en);  // отладка
-#endif
-			}
-			printf("Структуры скопированы в нов массb для алфавитной сортировки --> \n");
-*/
+
 			else  // else - нет, старые настройки сортировки ????????????????????????
 			{
 				
@@ -710,15 +680,6 @@ int main(int argc, const char ** argv, const char** env)
 				puts("\n Алфавитно сортированный файл считан повторно! \n  \n");
 			}
 			fclose(pFsort);
-			////,,,,,,,,,, Конец настроек перед обучением print ,,,,,,,,,,,,,,,,,,,,,,,,,
-			//printf("This \"Print\"  inside to engl17.c after idsort()  - \n");
-			//int m;    // Temp отладка
-			//for (m = 0; m < *pcountnumword; m++)
-			//{
-			//	//pmemsortword[m].repeat = 0;
-			//	printf(" _ %3d.  alphabet_id=%3d id=%3d  _( %s ) [repeat= %d ]   \n", m, pmemsortword[m].repeat_id, pmemsortword[m].id, pmemsortword[m].en, pmemsortword[m].repeat);    // temp
-			//}
-
 
 
 		};
@@ -751,12 +712,7 @@ int main(int argc, const char ** argv, const char** env)
 					exit(1);
 				}
 
-				/*
-				//switch (psettings->sorttype)
 
-
-
-				*/
 				size_t result = fread(pmemsortword, sizeof(byte), fileSize, pFfreqsort);//???????pFfreqsort 
 																						// частотн сортиров-й массив слов считан повторн из ф в д п pmemsortword 
 				puts("\n Алфавитно сортированный файл считан повторно! \n  \n");
@@ -767,15 +723,6 @@ int main(int argc, const char ** argv, const char** env)
 
 
 		};
-
-		////,,,,,,,,,, Конец настроек перед обучением print ,,,,,,,,,,,,,,,,,,,,,,,,,
-		//printf("This \"Print\"  inside to engl17.c after idsort()  - \n");
-		//int m;    // Temp отладка
-		//for (m = 0; m < (psettings->inicountnumword); m++)
-		//{
-		//	//pmemsortword[m].repeat = 0;
-		//	printf(" _ %3d.  alphabet_id=%3d id=%3d  _( %s ) [repeat= %d ]   \n", m, pmemsortword[m].repeat_id, pmemsortword[m].id, pmemsortword[m].en, pmemsortword[m].repeat);    // temp
-		//}
 
 		
 	} //end else "Продолжаем старый ур "
@@ -807,6 +754,4 @@ int main(int argc, const char ** argv, const char** env)
 	system("pause");
  }  //end main
 
- //  синхронизация ??????????
- //  синхронизация ??????????
 
